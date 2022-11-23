@@ -13,7 +13,35 @@ type t2 = Ast.AstTds.programme
 (* Vérifie la bonne utilisation des identifiants et tranforme l'expression
 en une expression de type AstTds.expression *)
 (* Erreur si mauvaise utilisation des identifiants *)
-let analyse_tds_expression tds e = (AstTds.Booleen true) (* failwith "todo"*)
+let rec analyse_tds_expression tds e =
+  match e with
+  |AstSyntax.Ident s -> 
+            (match chercherGlobalement tds s with
+              |None -> raise (IdentifiantNonDeclare s)
+              |Some info_ast -> (match info_ast_to_info info_ast with
+                                  |InfoConst (_, const) -> AstTds.Entier const
+                                  |InfoVar _ -> AstTds.Ident info_ast
+                                  |InfoFun _ -> raise (MauvaiseUtilisationIdentifiant s) 
+                                )
+            )
+  |AstSyntax.Booleen b -> AstTds.Booleen b
+  |AstSyntax.Entier e -> AstTds.Entier e
+  |AstSyntax.Unaire (unaire, exp) -> AstTds.Unaire (unaire,analyse_tds_expression tds exp)
+  |AstSyntax.Binaire (binaire, exp1, exp2) -> 
+        let ne1 = analyse_tds_expression tds exp1 in
+          let ne2  = analyse_tds_expression tds exp2 in
+            AstTds.Binaire (binaire, ne1, ne2)
+  |AstSyntax.AppelFonction (str, expLs) -> 
+                (match chercherGlobalement tds str with
+                  |None -> raise  (IdentifiantNonDeclare str)
+                  |Some info_ast -> (match info_ast_to_info info_ast with
+                                  |InfoFun _ -> let newExpLs = List.map (analyse_tds_expression tds) expLs
+                                                in AstTds.AppelFonction (info_ast, newExpLs)
+                                  |_ -> raise (MauvaiseUtilisationIdentifiant str)
+                                )
+
+                )
+
 
 
 (* analyse_tds_instruction : tds -> info_ast option -> AstSyntax.instruction -> AstTds.instruction *)
@@ -148,7 +176,21 @@ and analyse_tds_bloc tds oia li =
 en une fonction de type AstTds.fonction *)
 (* Erreur si mauvaise utilisation des identifiants *)
 let analyse_tds_fonction maintds (AstSyntax.Fonction(t,n,lp,li))  =
-  failwith "TO DO"
+        match chercherGlobalement maintds n with
+          |Some _ -> raise (DoubleDeclaration n)
+          |None
+              -> let typeLst = List.map fst lp in 
+                let info_ast =  info_to_info_ast (InfoFun (n,t, typeLst)) in
+                let tdsFille = creerTDSFille maintds in
+                let aux (type2, str) = match chercherLocalement maintds str with
+                  |Some _ -> raise (DoubleDeclaration str)
+                  |None -> let info = InfoVar (str, type2, 0, "") in
+                            let iap = info_to_info_ast info in
+                          ajouter tdsFille str iap;
+                          (type2, iap)
+                in let iapLst = List.map aux lp in
+                  let newLi = analyse_tds_bloc tdsFille (Some info_ast) li in
+                          AstTds.Fonction (t, info_ast, iapLst, newLi)
 
 (* analyser : AstSyntax.programme -> AstTds.programme *)
 (* Paramètre : le programme à analyser *)
