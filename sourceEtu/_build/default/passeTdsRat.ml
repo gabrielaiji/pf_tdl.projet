@@ -176,21 +176,22 @@ and analyse_tds_bloc tds oia li =
 en une fonction de type AstTds.fonction *)
 (* Erreur si mauvaise utilisation des identifiants *)
 let analyse_tds_fonction maintds (AstSyntax.Fonction(t,n,lp,li))  =
-        match chercherGlobalement maintds n with
+        match chercherLocalement maintds n with
           |Some _ -> raise (DoubleDeclaration n)
-          |None
-              -> let typeLst = List.map fst lp in 
-                let info_ast =  info_to_info_ast (InfoFun (n,t, typeLst)) in
-                let tdsFille = creerTDSFille maintds in
-                let aux (type2, str) = match chercherLocalement maintds str with
-                  |Some _ -> raise (DoubleDeclaration str)
-                  |None -> let info = InfoVar (str, type2, 0, "") in
-                            let iap = info_to_info_ast info in
-                          ajouter tdsFille str iap;
-                          (type2, iap)
-                in let iapLst = List.map aux lp in
-                  let newLi = analyse_tds_bloc tdsFille (Some info_ast) li in
-                          AstTds.Fonction (t, info_ast, iapLst, newLi)
+          |None -> let typeLst = List.map fst lp in 
+                     let info_ast =  info_to_info_ast (InfoFun (n,t,typeLst)) in
+                       let _ = ajouter maintds n info_ast in
+                         let tdsFille = creerTDSFille maintds in
+                           let aux (type_aux, str_aux) =
+                             match chercherLocalement tdsFille str_aux with
+                              |Some _ -> raise (DoubleDeclaration str_aux)
+                              |None -> let info_aux = InfoVar (str_aux, type_aux, 0, "") in
+                                         let iap = info_to_info_ast info_aux in
+                                           ajouter tdsFille str_aux iap;(type_aux, iap)
+                           in
+                             let iapLst = List.map aux lp in
+                               let nli = analyse_tds_bloc tdsFille (Some info_ast) li in
+                                 AstTds.Fonction (t, info_ast, iapLst, nli)
 
 (* analyser : AstSyntax.programme -> AstTds.programme *)
 (* Paramètre : le programme à analyser *)
