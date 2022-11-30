@@ -9,6 +9,8 @@ type t1 = Ast.AstTds.programme
 type t2 = Ast.AstType.programme
 
 
+(* getType : info_ast -> typ *)
+(* Renvoie le type associé à une info_ast donnée en paramètre *)
 let getType info_ast =
   match info_ast_to_info info_ast with
   | InfoConst (_,_) -> Int
@@ -16,6 +18,11 @@ let getType info_ast =
   | InfoFun (_,t,_) -> t
 
 
+(* analyse_type_expression : AstTds.expression -> (AstType.expression * typ) *)
+(* Paramètre e : l'expression à analyser *)
+(* Vérifie la bonne utilisation des types et tranforme l'expression
+en une expression de type AstType.expression, en renvoyant également le type associé *)
+(* Erreur si mauvaise utilisation des types *)
 let rec analyse_type_expression e =
   match e with
   | AstTds.Ident info_ast -> (AstType.Ident info_ast, getType info_ast)
@@ -54,6 +61,11 @@ let rec analyse_type_expression e =
         | _ -> failwith "InternalError")
 
 
+(* analyse_type_instruction : AstTds.instruction -> AstType.instruction *)
+(* Paramètre i : l'instruction à analyser *)
+(* Vérifie la bonne utilisation des types et tranforme l'instruction
+en une instruction de type AstType.instruction *)
+(* Erreur si mauvaise utilisation des types *)
 let rec analyse_type_instruction i =
   match i with
   | AstTds.Declaration (t,info_ast,e) ->
@@ -104,7 +116,7 @@ let rec analyse_type_instruction i =
         else
           raise (TypeInattendu(t,nt))
 
-  | Empty -> Empty
+  | AstTds.Empty -> AstType.Empty
 
 and analyse_type_bloc li =
   let nli = List.map analyse_type_instruction li in
