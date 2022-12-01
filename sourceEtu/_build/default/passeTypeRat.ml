@@ -118,11 +118,20 @@ let rec analyse_type_instruction i =
 
   | AstTds.Empty -> AstType.Empty
 
+(* analyse_type_bloc : AstTds.bloc -> AstType.bloc *)
+(* Paramètre li : liste d'instructions à analyser *)
+(* Vérifie la bonne utilisation des types et tranforme le bloc en un bloc de type AstType.bloc *)
+(* Erreur si mauvaise utilisation des types *)
 and analyse_type_bloc li =
   let nli = List.map analyse_type_instruction li in
     nli
 
 
+(* analyse_type_fonction : AstTds.fonction -> AstType.fonction *)
+(* Paramètre : la fonction à analyser *)
+(* Vérifie la bonne utilisation des types et tranforme la fonction
+en une fonction de type AstType.fonction *)
+(* Erreur si mauvaise utilisation des types *)
 let analyse_type_fonction (AstTds.Fonction (t,info_ast,lp,li)) =
   let tlp = List.map fst lp in
     let iap = List.map (fun (t,info_ast_aux) -> modifier_type_variable t info_ast_aux;info_ast_aux) lp in

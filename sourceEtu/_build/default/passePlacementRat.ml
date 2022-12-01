@@ -8,6 +8,13 @@ type t1 = Ast.AstType.programme
 type t2 = Ast.AstPlacement.programme
 
 
+(* analyse_placement_instruction : AstType.instruction -> int -> string -> (AstTPlacement.instruction * int) *)
+(* Paramètre i : l'instruction à analyser *)
+(* Paramètre depl : le déplacement par rapport au registre reg associé à l'instruction i *)
+(* Paramètre reg : le registre associé à l'instruction i *)
+(* Vérifie le bon placement mémoire et tranforme l'instruction
+en une instruction de type AstPlacement.instruction, en renvoyant également la taille en mémoire associée à l'instruction i *)
+(* InternalError si erreur dans les passes précédentes *)
 let rec analyse_placement_instruction i depl reg =
   match i with
   | AstType.Declaration (info_ast,e) ->
@@ -39,6 +46,12 @@ let rec analyse_placement_instruction i depl reg =
 
   | AstType.Empty -> (AstPlacement.Empty, 0)
 
+(* analyse_placement_bloc : AstType.bloc -> int -> string -> AstTPlacement.bloc *)
+(* Paramètre li : liste d'instructions à analyser *)
+(* Paramètre depl : le déplacement par rapport au registre reg associé à la liste d'instructions li *)
+(* Paramètre reg : le registre associé à la liste d'instructions li *)
+(* Vérifie le bon placement mémoire et tranforme le bloc en un bloc de type AstPlacement.bloc *)
+(* InternalError si erreur dans les passes précédentes *)
 and analyse_placement_bloc li depl reg =
   match li with
   | [] -> ([],0)
@@ -48,6 +61,11 @@ and analyse_placement_bloc li depl reg =
         (ni::nli, taille_i + tli)
 
 
+(* analyse_placement_fonction : AstType.fonction -> AstPlacement.fonction *)
+(* Paramètre : la fonction à analyser *)
+(* Vérifie le bon placement mémoire et tranforme la fonction
+en une fonction de type AstPlacement.fonction *)
+(* InternalError si erreur dans les passes précédentes *)
 let analyse_placement_fonction (AstType.Fonction (info_ast,lp,li)) =
   let nli = analyse_placement_bloc li 3 "LB" in
     let rec aux cmpt rlp =
@@ -68,7 +86,7 @@ let analyse_placement_fonction (AstType.Fonction (info_ast,lp,li)) =
 (* Paramètre : le programme à analyser *)
 (* Vérifie le bon placement mémoire et tranforme le programme
 en un programme de type AstPlacement.programme *)
-(* Erreur si mauvais placement mémoire *)
+(* InternalError si erreur dans les passes précédentes *)
 let analyser (AstType.Programme (fonctions,prog)) =
   let nf = List.map analyse_placement_fonction fonctions in
   let nb = analyse_placement_bloc prog 0 "SB" in
