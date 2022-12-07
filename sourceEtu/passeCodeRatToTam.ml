@@ -7,10 +7,14 @@ open Type
 open Code
 open Tam
 
-
 type t1 = Ast.AstPlacement.programme
 type t2 = string
 
+
+(* analyse_code_expression : AstPlacement.expression -> string *)
+(* Paramètre : l'expression à analyser *)
+(* Génère le code TAM (string) associé à l'expression *)
+(* InternalError si erreur dans les passes précédentes *)
 let rec analyse_code_expression e =
   match e with
   | AppelFonction(info_ast,le) ->
@@ -51,6 +55,10 @@ let rec analyse_code_expression e =
         | Inf -> subr "ILss")
 
 
+(* analyse_code_instruction : AstPlacement.instruction -> string *)
+(* Paramètre : l'instruction à analyser *)
+(* Génère le code TAM (string) associé à l'instruction *)
+(* InternalError si erreur dans les passes précédentes *)
 let rec analyse_code_instruction i =
   match i with
   | Declaration(info_ast,e) ->
@@ -109,14 +117,32 @@ let rec analyse_code_instruction i =
 
   | Empty -> ""
 
-  and analyse_code_bloc (li,tailleBloc) =
-    let c = String.concat "" (List.map analyse_code_instruction li) in
-      c ^ (pop 0 tailleBloc)
+(* analyse_code_bloc : AstPlacement.bloc -> string *)
+(* Paramètre : liste d'instructions à analyser, avec la taille du bloc associé *)
+(* Génère le code TAM (string) associé à la liste d'instructions *)
+(* InternalError si erreur dans les passes précédentes *)
+and analyse_code_bloc (li,tailleBloc) =
+  let c = String.concat "" (List.map analyse_code_instruction li) in
+    c ^ (pop 0 tailleBloc)
 
 
-let analyse_code_fonction f = failwith "TO DO"
+(* analyse_code_fonction : AstPlacement.fonction -> string *)
+(* Paramètre : la fonction à analyser *)
+(* Génère le code TAM (string) associé à la fonction *)
+(* InternalError si erreur dans les passes précédentes *)
+let analyse_code_fonction (Fonction (info_ast,_,li)) =
+  let nf = match info_ast_to_info info_ast with
+           | InfoFun(n,_,_) -> n
+           | _ -> failwith "InternalError" in
+  label nf
+  ^ analyse_code_bloc li
+  ^ halt
 
 
+(* analyser : AstPlacement.programme -> string *)
+(* Paramètre : le programme à analyser *)
+(* Génère le code TAM (string) associé au programme *)
+(* InternalError si erreur dans les passes précédentes *)
 let analyser (Programme (fonctions,prog)) =
   let enTete = getEntete() in
     let fct = String.concat "" (List.map analyse_code_fonction fonctions) in
