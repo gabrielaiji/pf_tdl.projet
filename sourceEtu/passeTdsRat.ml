@@ -46,17 +46,22 @@ let rec analyse_tds_expression tds e =
         let ne3 = analyse_tds_expression tds e3 in
           AstTds.Ternaire (ne1, ne2, ne3)
 
-
+let createIdLoop = 
+  let num = ref 0 in
+  fun () ->
+    num := (!num)+1 ;
+    (string_of_int (!num))
 
 (* analyse_tds_instruction : tds -> info_ast option -> AstSyntax.instruction -> AstTds.instruction *)
 (* Paramètre tds : la table des symboles courante *)
 (* Paramètre oia : None si l'instruction i est dans le bloc principal,
                    Some ia où ia est l'information associée à la fonction dans laquelle est l'instruction i sinon *)
+(* Paramètre refListeLoop : Référence de la liste des identifiants des loops dans laquelle l'instruction i est imbriquée *)
 (* Paramètre i : l'instruction à analyser *)
 (* Vérifie la bonne utilisation des identifiants et tranforme l'instruction
 en une instruction de type AstTds.instruction *)
 (* Erreur si mauvaise utilisation des identifiants *)
-let rec analyse_tds_instruction tds oia i =
+let rec analyse_tds_instruction tds oia refListeLoop i =
   match i with
   | AstSyntax.Declaration (t, n, e) ->
       begin
@@ -129,16 +134,16 @@ let rec analyse_tds_instruction tds oia i =
       (* Analyse de la condition *)
       let nc = analyse_tds_expression tds c in
       (* Analyse du bloc then *)
-      let tast = analyse_tds_bloc tds oia t in
+      let tast = analyse_tds_bloc tds oia refListeLoop t in
       (* Analyse du bloc else *)
-      let east = analyse_tds_bloc tds oia e in
+      let east = analyse_tds_bloc tds oia refListeLoop e in
       (* Renvoie la nouvelle structure de la conditionnelle *)
       AstTds.Conditionnelle (nc, tast, east)
   | AstSyntax.TantQue (c,b) ->
       (* Analyse de la condition *)
       let nc = analyse_tds_expression tds c in
       (* Analyse du bloc *)
-      let bast = analyse_tds_bloc tds oia b in
+      let bast = analyse_tds_bloc tds oia refListeLoop b in
       (* Renvoie la nouvelle structure de la boucle *)
       AstTds.TantQue (nc, bast)
   | AstSyntax.Retour (e) ->
@@ -153,22 +158,56 @@ let rec analyse_tds_instruction tds oia i =
         let ne = analyse_tds_expression tds e in
         AstTds.Retour (ne,ia)
       end
+      
+  |AstSyntax.Loop (n, li) ->
+      let listeLoop = !refListeLoop in
+        if List.mem n listeLoop
+          then raise (DoubleDeclaration n)
+          else let name = (if n = "" then createIdLoop() else n) in
+                begin
+                  refListeLoop := name::listeLoop;
+                  let nli = analyse_tds_bloc tds oia refListeLoop li in
+                    (refListeLoop := listeLoop;
+                    AstTds.Loop(name, nli))
+                end
 
+  |AstSyntax.Break n ->
+      (match !refListeLoop with
+        |[] -> raise (BreakSansLoop)
+        |hd::tl -> if List.mem n (hd::tl)
+                      then AstTds.Break n
+                    else if n = ""
+                      then AstTds.Break hd
+                    else
+                      raise (LoopUndefined n)
+      )
+    
+  |AstSyntax.Continue n ->
+      (match !refListeLoop with
+        |[] -> raise (BreakSansLoop)
+        |hd::tl -> if List.mem n (hd::tl)
+                      then AstTds.Continue n
+                    else if n = ""
+                      then AstTds.Continue hd
+                    else
+                      raise (LoopUndefined n)
+      )
 
 (* analyse_tds_bloc : tds -> info_ast option -> AstSyntax.bloc -> AstTds.bloc *)
 (* Paramètre tds : la table des symboles courante *)
 (* Paramètre oia : None si le bloc li est dans le programme principal,
                    Some ia où ia est l'information associée à la fonction dans laquelle est le bloc li sinon *)
+(* Paramètre refListeLoop : Référence de la liste des identifiants des loops dans laquelle la li est imbriquée *)
 (* Paramètre li : liste d'instructions à analyser *)
 (* Vérifie la bonne utilisation des identifiants et tranforme le bloc en un bloc de type AstTds.bloc *)
 (* Erreur si mauvaise utilisation des identifiants *)
-and analyse_tds_bloc tds oia li =
+and analyse_tds_bloc tds oia refListeLoop li =
   (* Entrée dans un nouveau bloc, donc création d'une nouvelle tds locale
   pointant sur la table du bloc parent *)
   let tdsbloc = creerTDSFille tds in
   (* Analyse des instructions du bloc avec la tds du nouveau bloc.
      Cette tds est modifiée par effet de bord *)
-   let nli = List.map (analyse_tds_instruction tdsbloc oia) li in
+   let nli = List.map (analyse_tds_instruction tdsbloc oia refListeLoop) li in
    (* afficher_locale tdsbloc ; *) (* décommenter pour afficher la table locale *)
    nli
 
@@ -194,7 +233,7 @@ let analyse_tds_fonction maintds (AstSyntax.Fonction(t,n,lp,li))  =
                                            ajouter tdsFille str_aux iap;(type_aux, iap)
                            in
                              let iapLst = List.map aux lp in
-                               let nli = analyse_tds_bloc tdsFille (Some info_ast) li in
+                               let nli = analyse_tds_bloc tdsFille (Some info_ast) (ref []) li in
                                  AstTds.Fonction (t, info_ast, iapLst, nli)
 
 (* analyser : AstSyntax.programme -> AstTds.programme *)
@@ -205,5 +244,5 @@ en un programme de type AstTds.programme *)
 let analyser (AstSyntax.Programme (fonctions,prog)) =
   let tds = creerTDSMere () in
   let nf = List.map (analyse_tds_fonction tds) fonctions in
-  let nb = analyse_tds_bloc tds None prog in
+  let nb = analyse_tds_bloc tds None (ref []) prog in
   AstTds.Programme (nf,nb)

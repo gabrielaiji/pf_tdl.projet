@@ -2,6 +2,10 @@ testElseOptionnel1.rat dans : /gestion_id/sans_fonction/
 
 testElseOptionnel2.rat dans : /gestion_id/sans_fonction/
 
+A COMPLETER
+
+-----------------------------------------------------------------------
+
 testTernaire1.rat dans : /gestion_id/sans_fonction/
 			 /type/sans_fonction/
 			 /tam/sans_fonction/
@@ -13,3 +17,15 @@ testTernaire2.rat dans : /gestion_id/avec_fonction/
 testTernaire3.rat (pour cas d'erreur) dans : /type/sans_fonction/
 
 testTernaire4.rat (pour cas d'erreur) dans : /type/sans_fonction/
+
+-----------------------------------------------------------------------
+
+testLoop1.rat dans : /gestion_id/sans_fonction/
+
+testLoop2.rat (pour cas d'erreur) dans : /gestion_id/sans_fonction/
+
+testLoop3.rat dans : /gestion_id/sans_fonction/
+
+A COMPLETER
+
+-----------------------------------------------------------------------

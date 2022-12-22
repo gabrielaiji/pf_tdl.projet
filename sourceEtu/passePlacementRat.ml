@@ -46,6 +46,14 @@ let rec analyse_placement_instruction i depl reg =
 
   | AstType.Empty -> (AstPlacement.Empty, 0)
 
+  | AstType.Loop (n,b) ->
+    let nb = analyse_placement_bloc b depl reg in
+      (AstPlacement.Loop (n,nb), 0)
+  
+  | AstType.Break n -> (AstPlacement.Break n, 0)
+
+  | AstType.Continue n -> (AstPlacement.Continue n, 0)
+
 (* analyse_placement_bloc : AstType.bloc -> int -> string -> AstTPlacement.bloc *)
 (* Paramètre li : liste d'instructions à analyser *)
 (* Paramètre depl : le déplacement par rapport au registre reg associé à la liste d'instructions li *)

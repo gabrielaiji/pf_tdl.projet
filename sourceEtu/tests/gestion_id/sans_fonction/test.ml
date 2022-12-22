@@ -133,6 +133,20 @@ let%test_unit "testElseOptionnel2" =
 let%test_unit "testTernaire1" = 
   let _ = compiler (pathFichiersRat^"testTernaire1.rat") in ()
 
+let%test_unit "testLoop1" = 
+  let _ = compiler (pathFichiersRat^"testLoop1.rat") in ()
+
+let%test_unit "testLoop2" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testLoop2.rat")
+    in raise ErreurNonDetectee
+  with
+  | DoubleDeclaration("l") -> ()
+
+let%test_unit "testLoop3" = 
+  let _ = compiler (pathFichiersRat^"testLoop3.rat") in ()
+
+
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
 open Unix
 open Filename

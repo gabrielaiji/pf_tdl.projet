@@ -6,6 +6,9 @@ exception DoubleDeclaration of string
 exception IdentifiantNonDeclare of string 
 exception MauvaiseUtilisationIdentifiant of string 
 
+exception BreakSansLoop
+exception LoopUndefined of string
+
 (* Exceptions pour le typage *)
 (* Le premier type est le type réel, le second est le type attendu *)
 exception TypeInattendu of typ * typ

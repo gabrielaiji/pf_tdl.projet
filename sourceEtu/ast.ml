@@ -56,6 +56,10 @@ and instruction =
   | TantQue of expression * bloc
   (* return d'une fonction *)
   | Retour of expression
+  (* Boucle "loop" à la Rust *)
+  | Loop of string * bloc
+  | Break of string
+  | Continue of string
 
 (* Structure des fonctions de Rat *)
 (* type de retour - nom - liste des paramètres (association type et nom) - corps de la fonction *)
@@ -99,6 +103,10 @@ struct
     | TantQue of expression * bloc
     | Retour of expression * Tds.info_ast  (* les informations sur la fonction à laquelle est associé le retour *)
     | Empty (* les nœuds ayant disparus: Const *)
+    (* Boucle "loop" à la Rust *)
+    | Loop of string * bloc
+    | Break of string
+    | Continue of string
 
 
   (* Structure des fonctions dans notre langage *)
@@ -148,6 +156,10 @@ type bloc = instruction list
   | TantQue of expression * bloc
   | Retour of expression * Tds.info_ast
   | Empty (* les nœuds ayant disparus: Const *)
+  (* Boucle "loop" à la Rust *)
+  | Loop of string * bloc
+  | Break of string
+  | Continue of string
 
 (* informations associées à l'identificateur (dont son nom), liste des paramètres, corps *)
 type fonction = Fonction of Tds.info_ast * Tds.info_ast list * bloc
@@ -179,6 +191,10 @@ type bloc = instruction list * int (* taille du bloc *)
  | TantQue of expression * bloc
  | Retour of expression * int * int (* taille du retour et taille des paramètres *)
  | Empty (* les nœuds ayant disparus: Const *)
+ (* Boucle "loop" à la Rust *)
+ | Loop of string * bloc
+ | Break of string
+ | Continue of string
 
 (* informations associées à l'identificateur (dont son nom), liste de paramètres, corps, expression de retour *)
 (* Plus besoin de la liste des paramètres mais on la garde pour les tests du placements mémoire *)

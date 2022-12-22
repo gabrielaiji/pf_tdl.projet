@@ -132,6 +132,13 @@ let rec analyse_type_instruction i =
 
   | AstTds.Empty -> AstType.Empty
 
+  | AstTds.Loop (n,li) ->
+      let nli = analyse_type_bloc li in
+        AstType.Loop(n, nli)
+  | AstTds.Break n -> AstType.Break n
+  | AstTds.Continue n -> AstType.Continue n
+
+
 (* analyse_type_bloc : AstTds.bloc -> AstType.bloc *)
 (* Paramètre li : liste d'instructions à analyser *)
 (* Vérifie la bonne utilisation des types et tranforme le bloc en un bloc de type AstType.bloc *)
