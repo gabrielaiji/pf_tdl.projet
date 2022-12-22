@@ -124,6 +124,9 @@ let%test_unit "testRecursiviteVariable" =
   with
   | IdentifiantNonDeclare("x") -> ()
 
+let%test_unit "testElseOptionnel1" = 
+  let _ = compiler (pathFichiersRat^"testElseOptionnel1.rat") in ()
+
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
 open Unix
 open Filename
