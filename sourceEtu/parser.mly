@@ -37,6 +37,9 @@ open Ast.AstSyntax
 %token INF
 %token EOF
 
+%token PI
+%token DP
+
 (* Type de l'attribut synthétisé des non-terminaux *)
 %type <programme> prog
 %type <instruction list> bloc
@@ -67,6 +70,7 @@ i :
 | CONST n=ID EQUAL e=ENTIER PV      {Constante (n,e)}
 | PRINT e1=e PV                     {Affichage (e1)}
 | IF exp=e li1=bloc ELSE li2=bloc   {Conditionnelle (exp,li1,li2)}
+| IF exp=e li1=bloc                 {Conditionnelle (exp,li1,[])}   (* Else optionnel *)
 | WHILE exp=e li=bloc               {TantQue (exp,li)}
 | RETURN exp=e PV                   {Retour (exp)}
 
@@ -76,18 +80,19 @@ typ :
 | RAT     {Rat}
 
 e : 
-| CALL n=ID PO lp=e* PF   {AppelFonction (n,lp)}
-| CO e1=e SLASH e2=e CF   {Binaire(Fraction,e1,e2)}
-| n=ID                    {Ident n}
-| TRUE                    {Booleen true}
-| FALSE                   {Booleen false}
-| e=ENTIER                {Entier e}
-| NUM e1=e                {Unaire(Numerateur,e1)}
-| DENOM e1=e              {Unaire(Denominateur,e1)}
-| PO e1=e PLUS e2=e PF    {Binaire (Plus,e1,e2)}
-| PO e1=e MULT e2=e PF    {Binaire (Mult,e1,e2)}
-| PO e1=e EQUAL e2=e PF   {Binaire (Equ,e1,e2)}
-| PO e1=e INF e2=e PF     {Binaire (Inf,e1,e2)}
-| PO exp=e PF             {exp}
+| CALL n=ID PO lp=e* PF         {AppelFonction (n,lp)}
+| CO e1=e SLASH e2=e CF         {Binaire(Fraction,e1,e2)}
+| n=ID                          {Ident n}
+| TRUE                          {Booleen true}
+| FALSE                         {Booleen false}
+| e=ENTIER                      {Entier e}
+| NUM e1=e                      {Unaire(Numerateur,e1)}
+| DENOM e1=e                    {Unaire(Denominateur,e1)}
+| PO e1=e PLUS e2=e PF          {Binaire (Plus,e1,e2)}
+| PO e1=e MULT e2=e PF          {Binaire (Mult,e1,e2)}
+| PO e1=e EQUAL e2=e PF         {Binaire (Equ,e1,e2)}
+| PO e1=e INF e2=e PF           {Binaire (Inf,e1,e2)}
+| PO exp=e PF                   {exp}
+| PO e1=e PI e2=e DP e3=e PF    {Ternaire (e1,e2,e3)}   (* Opérateur ternaire *)
 
 

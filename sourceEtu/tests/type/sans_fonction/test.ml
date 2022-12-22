@@ -382,6 +382,22 @@ let%test_unit "testOperation11"=
 let%test_unit "testOperation12"= 
   let _ = compiler (pathFichiersRat^"testOperation12.rat") in ()
 
+let%test_unit "testTernaire1" = 
+  let _ = compiler (pathFichiersRat^"testTernaire1.rat") in ()
+
+let%test_unit "testTernaire3" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testTernaire3.rat")
+    in raise ErreurNonDetectee
+  with
+  | TypeInattendu(Int,Bool) -> ()
+
+  let%test_unit "testTernaire4" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testTernaire4.rat")
+    in raise ErreurNonDetectee
+  with
+  | TypeInattendu(Int,Rat) -> ()
 
 
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)

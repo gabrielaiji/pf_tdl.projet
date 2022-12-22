@@ -59,6 +59,20 @@ let rec analyse_type_expression e =
             else
               raise (TypesParametresInattendus (tnel, tl))
         | _ -> failwith "InternalError")
+        
+  | AstTds.Ternaire (e1, e2, e3) ->
+    let ne1,t1 = analyse_type_expression e1 in
+      if est_compatible t1 Bool then
+          (
+            let ne2,t2 = analyse_type_expression e2 in
+              let ne3,t3 = analyse_type_expression e3 in
+                if est_compatible t2 t3 then
+                    (AstType.Ternaire (ne1, ne2, ne3), t2)
+                  else
+                    raise (TypeInattendu (t2,t3))
+          )
+          else
+            raise (TypeInattendu (t1,Bool))
 
 
 (* analyse_type_instruction : AstTds.instruction -> AstType.instruction *)

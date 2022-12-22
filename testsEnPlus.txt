@@ -1,0 +1,15 @@
+testElseOptionnel1.rat dans : /gestion_id/sans_fonction/
+
+testElseOptionnel2.rat dans : /gestion_id/sans_fonction/
+
+testTernaire1.rat dans : /gestion_id/sans_fonction/
+			 /type/sans_fonction/
+			 /tam/sans_fonction/
+			 
+testTernaire2.rat dans : /gestion_id/avec_fonction/
+			 /type/avec_fonction/
+			 /tam/avec_fonction/
+			 
+testTernaire3.rat (pour cas d'erreur) dans : /type/sans_fonction/
+
+testTernaire4.rat (pour cas d'erreur) dans : /type/sans_fonction/

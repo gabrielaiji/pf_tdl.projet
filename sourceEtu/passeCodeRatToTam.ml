@@ -53,6 +53,20 @@ let rec analyse_code_expression e =
         | EquInt -> subr "IEq"
         | EquBool -> subr "IEq"
         | Inf -> subr "ILss")
+        
+  | Ternaire(e1, e2, e3) ->
+    let ne1 = analyse_code_expression e1 in
+      let els = getEtiquette() in
+        let endif = getEtiquette() in
+          let ne2 = analyse_code_expression e2 in
+            let ne3 = analyse_code_expression e3 in
+              ne1
+              ^ (jumpif 0 els)
+              ^ ne2
+              ^ (jump endif)
+              ^ (label els)
+              ^ ne3
+              ^ (label endif)
 
 
 (* analyse_code_instruction : AstPlacement.instruction -> string *)
