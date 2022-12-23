@@ -1,31 +1,71 @@
-testElseOptionnel1.rat dans : /gestion_id/sans_fonction/
+-> if simple dans bloc principal
+testElseOptionnel1.rat dans : /ast_syntaxe/sans_fonction/
+					/gestion_id/sans_fonction/
 
-testElseOptionnel2.rat dans : /gestion_id/sans_fonction/
+-> if simple dans boucle while
+testElseOptionnel2.rat dans : /ast_syntaxe/sans_fonction/
+					/gestion_id/sans_fonction/
+
+-> appel de fonction dans if simple
+testElseOptionnel3.rat dans : /ast_syntaxe/avec_fonction/
+					/gestion_id/avec_fonction/
+
+-> if simple dans fonction
+-> return dans if simple + return apres if
+testElseOptionnel4.rat dans : /ast_syntaxe/avec_fonction/
+					/gestion_id/avec_fonction/
 
 A COMPLETER
 
 -----------------------------------------------------------------------
 
-testTernaire1.rat dans : /gestion_id/sans_fonction/
-			 /type/sans_fonction/
-			 /tam/sans_fonction/
+-> conditionnelle ternaire simple
+testTernaire1.rat dans :/ast_syntaxe/sans_fonction/
+				/gestion_id/sans_fonction/
+			 	/type/sans_fonction/
+			 	/tam/sans_fonction/
 			 
-testTernaire2.rat dans : /gestion_id/avec_fonction/
-			 /type/avec_fonction/
-			 /tam/avec_fonction/
+-> conditionnelle ternaire dans fonction
+-> conditionnelle ternaire qui appelle une fonction
+testTernaire2.rat dans :/ast_syntaxe/avec_fonction/
+				/gestion_id/avec_fonction/
+			 	/type/avec_fonction/
+			 	/tam/avec_fonction/
 			 
-testTernaire3.rat (pour cas d'erreur) dans : /type/sans_fonction/
+-> expression de condition pas de type booleen
+-> (pour cas d'erreur : TypeInattendu(Int,Bool))
+testTernaire3.rat dans : /type/sans_fonction/
 
-testTernaire4.rat (pour cas d'erreur) dans : /type/sans_fonction/
+-> les 2 expressions de retour ne sont pas types compatibles
+-> (pour cas d'erreur : TypeInattendu(Int,Rat))
+testTernaire4.rat dans : /type/sans_fonction/
 
 -----------------------------------------------------------------------
 
-testLoop1.rat dans : /gestion_id/sans_fonction/
+-> loop simple dans bloc principal
+testLoop1.rat dans : 	/ast_syntaxe/sans_fonction/
+				/gestion_id/sans_fonction/
 
-testLoop2.rat (pour cas d'erreur) dans : /gestion_id/sans_fonction/
+-> 2 loops de meme id imbriques
+-> (pour cas d'erreur : DoubleDeclaration("l") )
+testLoop2.rat dans : /gestion_id/sans_fonction/
 
-testLoop3.rat dans : /gestion_id/sans_fonction/
+-> 2 loops de meme id au meme niveau
+testLoop3.rat dans : 	/ast_syntaxe/sans_fonction/
+				/gestion_id/sans_fonction/
+
+-> break dans if
+testLoop4.rat dans : 	/ast_syntaxe/sans_fonction/
+				/gestion_id/sans_fonction/
+
+-> break sans loop
+-> (pour cas d'erreur : BreakSansLoop)
+testLoop5.rat dans : /gestion_id/sans_fonction/
+
+-> break id quand la loup a ete ferme (pour cas d'erreur : BreakSansLoop)
+testLoop6.rat dans : /gestion_id/sans_fonction/
 
 A COMPLETER
+
 
 -----------------------------------------------------------------------

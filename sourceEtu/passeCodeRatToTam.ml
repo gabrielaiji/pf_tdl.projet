@@ -130,7 +130,7 @@ let rec analyse_code_instruction i =
       ne ^ return tailleRet tailleParams
 
   | Empty -> ""
-  | _ -> failwith ""
+  | _ -> failwith "TODO"
 
 (* analyse_code_bloc : AstPlacement.bloc -> string *)
 (* Paramètre : liste d'instructions à analyser, avec la taille du bloc associé *)
