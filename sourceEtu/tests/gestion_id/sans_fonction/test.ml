@@ -146,6 +146,22 @@ let%test_unit "testLoop2" =
 let%test_unit "testLoop3" = 
   let _ = compiler (pathFichiersRat^"testLoop3.rat") in ()
 
+let%test_unit "testLoop4" = 
+  let _ = compiler (pathFichiersRat^"testLoop4.rat") in ()
+
+let%test_unit "testLoop5" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testLoop5.rat")
+    in raise ErreurNonDetectee
+  with
+  | BreakSansLoop -> ()
+
+let%test_unit "testLoop6" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testLoop6.rat")
+    in raise ErreurNonDetectee
+  with
+  | BreakSansLoop -> ()
 
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
 open Unix
