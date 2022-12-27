@@ -50,11 +50,17 @@ struct
     | Equ -> "= "
     | Inf -> "< "
 
+  (* Conversion des affectables *)
+  let rec string_of_affectable a = 
+    match a with
+    |Ident n -> n
+    |Deref a -> "Adresse de "^(string_of_affectable a)
+
   (* Conversion des expressions *)
   let rec string_of_expression e =
     match e with
     | AppelFonction (n,le) -> "call "^n^"("^((List.fold_right (fun i tq -> (string_of_expression i)^tq) le ""))^") "
-    | Ident n -> n^" "
+    (* | Ident n -> n^" " *)
     | Booleen b -> if b then "true " else "false "
     | Entier i -> (string_of_int i)^" "
     | Unaire (op,e1) -> (string_of_unaire op) ^ (string_of_expression e1)^" "
@@ -64,12 +70,19 @@ struct
           | Fraction -> "["^(string_of_expression e1)^"/"^(string_of_expression e2)^"] "
           | _ -> (string_of_expression e1)^(string_of_binaire b)^(string_of_expression e2)^" "
         end
+    | Ternaire (e1, e2, e3) ->
+        (string_of_expression e1)^"?"^(string_of_expression e2)^":"^(string_of_expression e3)
+    | New t -> "new "^(string_of_type t)
+    | Adresse n -> "&"^n
+    | Affectable a -> string_of_affectable a
+    | Null -> "null"
+
 
   (* Conversion des instructions *)
   let rec string_of_instruction i =
     match i with
     | Declaration (t, n, e) -> "Declaration  : "^(string_of_type t)^" "^n^" = "^(string_of_expression e)^"\n"
-    | Affectation (n,e) ->  "Affectation  : "^n^" = "^(string_of_expression e)^"\n"
+    | Affectation (a,e) ->  "Affectation  : "^(string_of_affectable a)^" = "^(string_of_expression e)^"\n"
     | Constante (n,i) ->  "Constante  : "^n^" = "^(string_of_int i)^"\n"
     | Affichage e ->  "Affichage  : "^(string_of_expression e)^"\n"
     | Conditionnelle (c,t,e) ->  "Conditionnelle  : IF "^(string_of_expression c)^"\n"^
@@ -78,6 +91,9 @@ struct
     | TantQue (c,b) -> "TantQue  : TQ "^(string_of_expression c)^"\n"^
                                   "FAIRE \n"^((List.fold_right (fun i tq -> (string_of_instruction i)^tq) b ""))^"\n"
     | Retour (e) -> "Retour  : RETURN "^(string_of_expression e)^"\n"
+    | Loop (n, b) -> "Loop "^n^": LOOP\n"^((List.fold_right (fun i tq -> (string_of_instruction i)^tq) b ""))^"\n"
+    | Break n -> "Break "^n
+    | Continue n -> "Continue "^n
 
   (* Conversion des fonctions *)
   let string_of_fonction (Fonction(t,n,lp,li)) = (string_of_type t)^" "^n^" ("^((List.fold_right (fun (t,n) tq -> (string_of_type t)^" "^n^" "^tq) lp ""))^") = \n"^

@@ -17,6 +17,22 @@ let getType info_ast =
   | InfoVar (_,t,_,_) -> t
   | InfoFun (_,t,_) -> t
 
+(* analyse_type_affectable : AstTds.affectable -> (AstType.affectable * typ) *)
+(* Paramètre a : l'affectable à analyser *)
+(* Vérifie la bonne utilisation des types et tranforme l'affectable
+en un affectable de type AstType.affectable, en renvoyant également le type associé *)
+(* Erreur si mauvaise utilisation des types *)
+let rec analyse_type_affectable a =
+  match a with
+  |AstTds.Ident info_ast -> (match info_ast_to_info info_ast with
+                            |InfoVar (_,t,_,_) -> (AstTds.Ident info_ast, t)
+                            |InfoConst _ -> (AstTds.Ident info_ast, Int)
+                            |_ -> failwith "Internal Error"
+                            )
+  |AstTds.Deref aff -> (match analyse_type_affectable aff with
+                      |(naff, Pointeur t) -> (AstTds.Deref naff, t)
+                      | _ -> raise NotAPointeur
+                        )
 
 (* analyse_type_expression : AstTds.expression -> (AstType.expression * typ) *)
 (* Paramètre e : l'expression à analyser *)
@@ -25,7 +41,7 @@ en une expression de type AstType.expression, en renvoyant également le type as
 (* Erreur si mauvaise utilisation des types *)
 let rec analyse_type_expression e =
   match e with
-  | AstTds.Ident info_ast -> (AstType.Ident info_ast, getType info_ast)
+  (* | AstTds.Ident info_ast -> (AstType.Ident info_ast, getType info_ast) *)
   | AstTds.Booleen b -> (AstType.Booleen b, Bool)
   | AstTds.Entier n -> (AstType.Entier n, Int)
   | AstTds.Unaire (u,e) ->
@@ -73,6 +89,16 @@ let rec analyse_type_expression e =
           )
           else
             raise (TypeInattendu (t1,Bool))
+    | AstTds.New t -> (AstType.New t, Pointeur t)
+    | AstTds.Adresse info_ast -> 
+        (match info_ast_to_info info_ast with
+        |InfoVar(_,t,_,_) -> (AstType.Adresse info_ast, Pointeur t)
+        |_ -> failwith "Internal Error"
+        )
+    | AstTds.Affectable a ->
+      let na,t = analyse_type_affectable a in
+        (AstType.Affectable na,t)
+    | AstTds.Null -> AstType.Null,Undefined
 
 
 (* analyse_type_instruction : AstTds.instruction -> AstType.instruction *)
@@ -90,13 +116,18 @@ let rec analyse_type_instruction i =
       else
         raise (TypeInattendu(nt,t))
 
-  | AstTds.Affectation (info_ast,e) ->
+  | AstTds.Affectation (a,e) ->
+    let (na,t) = analyse_type_affectable a in
+      let (ne,tPrime) = analyse_type_expression e in
+        if est_compatible t tPrime then AstType.Affectation(na,ne)
+                                   else raise (TypeInattendu(t,tPrime))
+  (* | AstTds.Affectation (info_ast,e) ->
     let (ne,t) = analyse_type_expression e in
       let nt = getType info_ast in 
         if est_compatible t nt then
           AstType.Affectation (info_ast,ne)
         else
-          raise (TypeInattendu(t,nt))
+          raise (TypeInattendu(t,nt)) *)
 
   | AstTds.Affichage e ->
     let (ne,t) = analyse_type_expression e in
@@ -104,7 +135,8 @@ let rec analyse_type_instruction i =
        | Int -> AffichageInt (ne)
        | Rat -> AffichageRat (ne)
        | Bool -> AffichageBool (ne)
-       | Undefined -> failwith "InternalError")
+       | Undefined -> failwith "InternalError"
+       | Pointeur _ -> raise CannotPrintPointeur)
 
   | AstTds.Conditionnelle (e,b1,b2) ->
     let (ne,t) = analyse_type_expression e in
@@ -137,7 +169,6 @@ let rec analyse_type_instruction i =
         AstType.Loop(n, nli)
   | AstTds.Break n -> AstType.Break n
   | AstTds.Continue n -> AstType.Continue n
-
 
 (* analyse_type_bloc : AstTds.bloc -> AstType.bloc *)
 (* Paramètre li : liste d'instructions à analyser *)

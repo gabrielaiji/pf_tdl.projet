@@ -1,6 +1,7 @@
 (* Module de la passe de génération du code *)
 (* doit être conforme à l'interface Passe *)
 open Tds
+open Ast.AstTds
 open Ast.AstType
 open Ast.AstPlacement
 open Type
@@ -10,6 +11,14 @@ open Tam
 type t1 = Ast.AstPlacement.programme
 type t2 = string
 
+(* analyse_code_affectable : AstPlacement.affectable -> string *)
+(* Paramètre : l'affectable à analyser *)
+(* Génère le code TAM (string) associé à l'affectable *)
+(* InternalError si erreur dans les passes précédentes *)
+let rec analyse_code_affectable a =
+  match a with
+  |Ident info_ast -> "TODO"
+  |Deref a -> "TODO"
 
 (* analyse_code_expression : AstPlacement.expression -> string *)
 (* Paramètre : l'expression à analyser *)
@@ -23,11 +32,11 @@ let rec analyse_code_expression e =
       | InfoFun(name,_,_) -> c ^ (call "ST" name)
       | _ -> failwith "InternalError")
   
-  | Ident info_ast ->
+  (* | Ident info_ast ->
     (match info_ast_to_info info_ast with
     | InfoVar(_,t,dep,reg) -> load (getTaille t) dep reg
     | InfoConst(_,i) -> loadl_int i
-    | _ -> failwith "InternalError")
+    | _ -> failwith "InternalError") *)
 
   | Booleen b ->
     if b then loadl_int 1
@@ -67,6 +76,10 @@ let rec analyse_code_expression e =
               ^ (label els)
               ^ ne3
               ^ (label endif)
+    | New t -> "TODO"
+    | Adresse b -> "TODO"
+    | Affectable a -> "TODO"
+    | Null -> "TODO"
 
 
 (* analyse_code_instruction : AstPlacement.instruction -> string *)
@@ -81,11 +94,12 @@ let rec analyse_code_instruction i =
       push (getTaille t) ^ (analyse_code_expression e) ^ (store (getTaille t) d r)
     | _ -> failwith "InternalError")
   
-  | Affectation(info_ast,e) ->
+  | Affectation(a,e) -> "TODO"
+  (* | Affectation(info_ast,e) ->
     (match info_ast_to_info info_ast with
     | InfoVar(_,t,d,r) ->
       (analyse_code_expression e) ^ (store (getTaille t) d r)
-    | _ -> failwith "InternalError")
+    | _ -> failwith "InternalError") *)
   
   | AffichageInt e ->
     let ne = analyse_code_expression e in

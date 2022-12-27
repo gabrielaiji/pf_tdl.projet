@@ -36,7 +36,12 @@ let%test_unit "testLoop4" =
 let%test_unit "testLoop8" = 
   let _ = compiler (pathFichiersRat^"testLoop8.rat") in ()
 
+let%test_unit "testPointeur1" = 
+  let _ = compiler (pathFichiersRat^"testPointeur1.rat") in ()
+
+
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
+
 open Unix
 open Filename
 
@@ -58,3 +63,4 @@ let%test_unit "all_tam" =
   let p_tam = "../../../../../tests/tam/sans_fonction/fichiersRat/" in
   let d = opendir p_tam in
   test d p_tam
+  

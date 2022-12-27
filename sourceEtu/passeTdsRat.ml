@@ -7,6 +7,27 @@ open Ast
 type t1 = Ast.AstSyntax.programme
 type t2 = Ast.AstTds.programme
 
+(* analyse_tds_affectable : tds -> AstSyntax.affectable -> bool -> AstTds.affectable *)
+(* Paramètre tds : la table des symboles courante *)
+(* Paramètre a : l'affectable à analyser *)
+(* Paramètre modif : permet de savoir si accès en écriture à la valeur pointée par a *)
+(* Vérifie la bonne utilisation des identifiants et tranforme l'affectable
+en un affectable de type AstTds.affectable *)
+(* Erreur si mauvaise utilisation des identifiants *)
+let rec analyse_tds_affectable tds a modif =
+  match a with
+  |AstSyntax.Deref v -> AstTds.Deref (analyse_tds_affectable tds v false)
+  |AstSyntax.Ident n -> 
+    (match chercherGlobalement tds n with
+      |None -> raise (IdentifiantNonDeclare n)
+      |Some info_ast -> (match info_ast_to_info info_ast with
+                          |InfoConst _ -> if modif then raise NotModifiable
+                                                            else AstTds.Ident info_ast
+                          |InfoVar _ -> AstTds.Ident info_ast
+                          |InfoFun _ -> raise (MauvaiseUtilisationIdentifiant n) 
+                        )
+    )
+
 (* analyse_tds_expression : tds -> AstSyntax.expression -> AstTds.expression *)
 (* Paramètre tds : la table des symboles courante *)
 (* Paramètre e : l'expression à analyser *)
@@ -15,15 +36,6 @@ en une expression de type AstTds.expression *)
 (* Erreur si mauvaise utilisation des identifiants *)
 let rec analyse_tds_expression tds e =
   match e with
-  |AstSyntax.Ident s -> 
-            (match chercherGlobalement tds s with
-              |None -> raise (IdentifiantNonDeclare s)
-              |Some info_ast -> (match info_ast_to_info info_ast with
-                                  |InfoConst (_, const) -> AstTds.Entier const
-                                  |InfoVar _ -> AstTds.Ident info_ast
-                                  |InfoFun _ -> raise (MauvaiseUtilisationIdentifiant s) 
-                                )
-            )
   |AstSyntax.Booleen b -> AstTds.Booleen b
   |AstSyntax.Entier e -> AstTds.Entier e
   |AstSyntax.Unaire (unaire, exp) -> AstTds.Unaire (unaire,analyse_tds_expression tds exp)
@@ -45,7 +57,19 @@ let rec analyse_tds_expression tds e =
       let ne2 = analyse_tds_expression tds e2 in
         let ne3 = analyse_tds_expression tds e3 in
           AstTds.Ternaire (ne1, ne2, ne3)
-
+  |AstSyntax.New t -> AstTds.New t
+  |AstSyntax.Adresse str ->
+        (match chercherGlobalement tds str with
+          |None -> raise (IdentifiantNonDeclare str)
+          |Some info_ast -> (match info_ast_to_info info_ast with
+                              |InfoVar _ -> AstTds.Adresse info_ast
+                              |_ -> raise (MauvaiseUtilisationIdentifiant str)
+                              )
+          )
+  |AstSyntax.Affectable a ->
+    let na = analyse_tds_affectable tds a true in
+      AstTds.Affectable na
+  |AstSyntax.Null -> AstTds.Null 
 
 (* Ensemble de fonctions utiles pour traiter le cas des boucles "loop" à la Rust *)
 let createIdLoop = 
@@ -120,7 +144,11 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
             il a donc déjà été déclaré dans le bloc courant *)
             raise (DoubleDeclaration n)
       end
-  | AstSyntax.Affectation (n,e) ->
+  | AstSyntax.Affectation (a,e) ->
+    let na = analyse_tds_affectable tds a true in
+      let ne = analyse_tds_expression tds e in
+        AstTds.Affectation(na,ne)
+  (* | AstSyntax.Affectation (n,e) ->
       begin
         match chercherGlobalement tds n with
         | None ->
@@ -142,7 +170,7 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
               (* Modification d'une constante ou d'une fonction *)
               raise (MauvaiseUtilisationIdentifiant n)
           end
-      end
+      end *)
   | AstSyntax.Constante (n,v) ->
       begin
         match chercherLocalement tds n with

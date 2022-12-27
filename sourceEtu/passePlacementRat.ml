@@ -7,6 +7,17 @@ open Type
 type t1 = Ast.AstType.programme
 type t2 = Ast.AstPlacement.programme
 
+(* analyse_placement_affectable : AstType.affectable -> int -> string -> (AstTPlacement.affectable * int) *)
+(* Paramètre a : l'affectable à analyser *)
+(* Paramètre depl : le déplacement par rapport au registre reg associé à l'affectable a *)
+(* Paramètre reg : le registre associé à l'affectable a *)
+(* Vérifie le bon placement mémoire et tranforme l'affectable
+en un affectable de type AstPlacement.affectable, en renvoyant également la taille en mémoire associée à l'affectable a *)
+(* InternalError si erreur dans les passes précédentes *)
+let rec analyse_placement_affectable a depl reg = match a with
+  |AstTds.Ident info_ast -> (AstTds.Ident info_ast, 0)
+  |AstTds.Deref aff -> let naff,_ = analyse_placement_affectable aff depl reg in
+      (AstTds.Deref naff,0)
 
 (* analyse_placement_instruction : AstType.instruction -> int -> string -> (AstTPlacement.instruction * int) *)
 (* Paramètre i : l'instruction à analyser *)
@@ -31,7 +42,7 @@ let rec analyse_placement_instruction i depl reg =
     | InfoFun (_,t,lp) -> (AstPlacement.Retour (e, getTaille t, List.fold_right (fun a r -> r + getTaille a) lp 0), 0)
     | _ -> failwith "InternalError")
 
-  | AstType.Affectation (info_ast,e) -> (AstPlacement.Affectation (info_ast,e), 0)
+  | AstType.Affectation (aff,e) -> (AstPlacement.Affectation (aff,e), 0)
 
   | AstType.AffichageInt e -> (AstPlacement.AffichageInt e, 0)
 

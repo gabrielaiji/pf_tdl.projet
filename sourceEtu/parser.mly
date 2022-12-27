@@ -42,6 +42,10 @@ open Ast.AstSyntax
 %token LOOP
 %token BREAK
 %token CONTINUE
+%token ASTX
+%token ESPT
+%token NEW
+%token NULL
 
 (* Type de l'attribut synthétisé des non-terminaux *)
 %type <programme> prog
@@ -50,7 +54,8 @@ open Ast.AstSyntax
 %type <instruction> i
 %type <typ> typ
 %type <typ*string> param
-%type <expression> e 
+%type <expression> e
+%type <affectable> a
 
 (* Type et définition de l'axiome *)
 %start <Ast.AstSyntax.programme> main
@@ -67,9 +72,14 @@ param : t=typ n=ID  {(t,n)}
 
 bloc : AO li=i* AF      {li}
 
+(* Pour pointeurs *)
+a :
+| n=ID              {Ident n}
+| PO ASTX aff=a PF  {Deref aff}
+
 i :
 | t=typ n=ID EQUAL e1=e PV          {Declaration (t,n,e1)}
-| n=ID EQUAL e1=e PV                {Affectation (n,e1)}
+| aff=a EQUAL e1=e PV               {Affectation (aff,e1)}   (* Modif pour pointeurs *)
 | CONST n=ID EQUAL e=ENTIER PV      {Constante (n,e)}
 | PRINT e1=e PV                     {Affichage (e1)}
 | IF exp=e li1=bloc ELSE li2=bloc   {Conditionnelle (exp,li1,li2)}
@@ -88,11 +98,13 @@ typ :
 | BOOL    {Bool}
 | INT     {Int}
 | RAT     {Rat}
+| t=typ ASTX {Pointeur t}
+| PO t=typ PF {t}
 
 e : 
 | CALL n=ID PO lp=e* PF         {AppelFonction (n,lp)}
 | CO e1=e SLASH e2=e CF         {Binaire(Fraction,e1,e2)}
-| n=ID                          {Ident n}
+(* | n=ID                          {Ident n} *)     (* règle supprimée car pointeurs *)
 | TRUE                          {Booleen true}
 | FALSE                         {Booleen false}
 | e=ENTIER                      {Entier e}
@@ -104,5 +116,10 @@ e :
 | PO e1=e INF e2=e PF           {Binaire (Inf,e1,e2)}
 | PO exp=e PF                   {exp}
 | PO e1=e PI e2=e DP e3=e PF    {Ternaire (e1,e2,e3)}   (* Opérateur ternaire *)
+(* Pointeurs *)
+| aff=a                         {Affectable aff}
+| NULL                          {Null}
+| PO NEW t=typ PF               {New t}
+| ESPT n=ID                     {Adresse n}
 
 
