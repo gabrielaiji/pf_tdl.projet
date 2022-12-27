@@ -46,11 +46,45 @@ let rec analyse_tds_expression tds e =
         let ne3 = analyse_tds_expression tds e3 in
           AstTds.Ternaire (ne1, ne2, ne3)
 
+
+(* Ensemble de fonctions utiles pour traiter le cas des boucles "loop" à la Rust *)
 let createIdLoop = 
   let num = ref 0 in
   fun () ->
     num := (!num)+1 ;
     (string_of_int (!num))
+
+let estImbriquee name ref_lstlst = let lst,_ = !ref_lstlst in
+  List.mem name lst
+
+let estVide ref_lstlst = let lst, _ = !ref_lstlst in lst = []
+
+let rec update_assoc key value lst = match lst with
+  |[] -> failwith "Internal Error"
+  |(k,v)::tl -> if key = k then (k, value)::tl
+                          else (k, v)::(update_assoc key value tl)
+
+let ajouteLoop name ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
+  match List.assoc_opt name lst_numloop with
+    |None -> ref_lstlst := (name::lst_loop), (name, 1)::lst_numloop;
+              name^"1"
+    |Some num -> ref_lstlst := (name::lst_loop), (update_assoc name (num+1) lst_numloop);
+                name^string_of_int(num+1)
+
+let removeLastLoop ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
+  match lst_loop with
+    |[] -> failwith "Internal Error"
+    |_::tl -> ref_lstlst := tl, lst_numloop
+
+let getUsedName name ref_lstlst = let _, lst_numloop = !ref_lstlst in
+  match List.assoc_opt name lst_numloop with
+    |None -> failwith "Internal Error"
+    |Some num -> name^string_of_int(num)
+
+let getLastUsedName ref_lstlst = let lst_loop, _ = !ref_lstlst in
+  match lst_loop with
+    |[] -> failwith "Internal Error"
+    |hd::_ -> getUsedName hd ref_lstlst
 
 (* analyse_tds_instruction : tds -> info_ast option -> AstSyntax.instruction -> AstTds.instruction *)
 (* Paramètre tds : la table des symboles courante *)
@@ -160,38 +194,36 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
       end
       
   |AstSyntax.Loop (n, li) ->
-      let listeLoop = !refListeLoop in
-        if List.mem n listeLoop
-          then raise (DoubleDeclaration n)
-          else let name = (if n = "" then createIdLoop() else n) in
-                begin
-                  refListeLoop := name::listeLoop;
-                  let nli = analyse_tds_bloc tds oia refListeLoop li in
-                    (refListeLoop := listeLoop;
-                    AstTds.Loop(name, nli))
-                end
+      if estImbriquee n refListeLoop
+        then raise (DoubleDeclaration n)
+        else let name = (if n = "" then "autocreated"^createIdLoop() else n) in
+          begin
+            let useableName = ajouteLoop name refListeLoop in
+              let nli = analyse_tds_bloc tds oia refListeLoop li in
+                removeLastLoop refListeLoop;
+                AstTds.Loop(useableName, nli)
+          end
 
   |AstSyntax.Break n ->
-      (match !refListeLoop with
-        |[] -> raise (BreakSansLoop)
-        |hd::tl -> if List.mem n (hd::tl)
-                      then AstTds.Break n
-                    else if n = ""
-                      then AstTds.Break hd
-                    else
-                      raise (LoopUndefined n)
-      )
+      if estVide refListeLoop then raise (BreakSansLoop)
+        else
+          if estImbriquee n refListeLoop
+            then AstTds.Break (getUsedName n refListeLoop)
+          else if n = ""
+              then AstTds.Break (getLastUsedName refListeLoop)
+          else
+            raise (LoopUndefined n)
     
   |AstSyntax.Continue n ->
-      (match !refListeLoop with
-        |[] -> raise (BreakSansLoop)
-        |hd::tl -> if List.mem n (hd::tl)
-                      then AstTds.Continue n
-                    else if n = ""
-                      then AstTds.Continue hd
-                    else
-                      raise (LoopUndefined n)
-      )
+    if estVide refListeLoop then raise (BreakSansLoop)
+        else
+          if estImbriquee n refListeLoop
+            then AstTds.Continue (getUsedName n refListeLoop)
+          else if n = ""
+              then AstTds.Continue (getLastUsedName refListeLoop)
+          else
+            raise (LoopUndefined n)
+
 
 (* analyse_tds_bloc : tds -> info_ast option -> AstSyntax.bloc -> AstTds.bloc *)
 (* Paramètre tds : la table des symboles courante *)
@@ -233,7 +265,7 @@ let analyse_tds_fonction maintds (AstSyntax.Fonction(t,n,lp,li))  =
                                            ajouter tdsFille str_aux iap;(type_aux, iap)
                            in
                              let iapLst = List.map aux lp in
-                               let nli = analyse_tds_bloc tdsFille (Some info_ast) (ref []) li in
+                               let nli = analyse_tds_bloc tdsFille (Some info_ast) (ref ([],[])) li in
                                  AstTds.Fonction (t, info_ast, iapLst, nli)
 
 (* analyser : AstSyntax.programme -> AstTds.programme *)
@@ -244,5 +276,5 @@ en un programme de type AstTds.programme *)
 let analyser (AstSyntax.Programme (fonctions,prog)) =
   let tds = creerTDSMere () in
   let nf = List.map (analyse_tds_fonction tds) fonctions in
-  let nb = analyse_tds_bloc tds None (ref []) prog in
+  let nb = analyse_tds_bloc tds None (ref ([],[])) prog in
   AstTds.Programme (nf,nb)

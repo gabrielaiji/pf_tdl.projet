@@ -93,3 +93,18 @@ let%expect_test "testTernaire1" =
   runtam (pathFichiersRat^"testTernaire1.rat");
   [%expect{| 2 |}]
 
+let%expect_test "testLoop1" =
+  runtam (pathFichiersRat^"testLoop1.rat");
+  [%expect{| 1266645 |}]
+
+let%expect_test "testLoop3" =
+  runtam (pathFichiersRat^"testLoop3.rat");
+  [%expect{| 0123456789101112131415161718192021222301234567891011121314151617181920212223 |}]
+
+let%expect_test "testLoop4" =
+  runtam (pathFichiersRat^"testLoop4.rat");
+  [%expect{| 012345678910 |}]
+
+let%expect_test "testLoop8" =
+  runtam (pathFichiersRat^"testLoop8.rat");
+  [%expect{| 01234567891011121314151617181920212223 |}]

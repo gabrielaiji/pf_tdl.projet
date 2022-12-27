@@ -163,6 +163,17 @@ let%test_unit "testLoop6" =
   with
   | BreakSansLoop -> ()
 
+let%test_unit "testLoop7" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testLoop7.rat")
+    in raise ErreurNonDetectee
+  with
+  | LoopUndefined("m") -> ()
+
+let%test_unit "testLoop8" = 
+  let _ = compiler (pathFichiersRat^"testLoop8.rat") in ()
+
+
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
 open Unix
 open Filename

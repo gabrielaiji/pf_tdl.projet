@@ -1,0 +1,10 @@
+main{
+  int c = 0;
+  l : loop {
+    c = (c+1);
+    print c;
+    if (c=5){
+      break m;
+    }
+  }
+}

@@ -15,8 +15,6 @@ testElseOptionnel3.rat dans : /ast_syntaxe/avec_fonction/
 testElseOptionnel4.rat dans : /ast_syntaxe/avec_fonction/
 					/gestion_id/avec_fonction/
 
-A COMPLETER
-
 -----------------------------------------------------------------------
 
 -> conditionnelle ternaire simple
@@ -45,6 +43,7 @@ testTernaire4.rat dans : /type/sans_fonction/
 -> loop simple dans bloc principal
 testLoop1.rat dans : 	/ast_syntaxe/sans_fonction/
 				/gestion_id/sans_fonction/
+				/tam/sans_fonction/
 
 -> 2 loops de meme id imbriques
 -> (pour cas d'erreur : DoubleDeclaration("l") )
@@ -53,19 +52,31 @@ testLoop2.rat dans : /gestion_id/sans_fonction/
 -> 2 loops de meme id au meme niveau
 testLoop3.rat dans : 	/ast_syntaxe/sans_fonction/
 				/gestion_id/sans_fonction/
+				/tam/sans_fonction/
 
 -> break dans if
 testLoop4.rat dans : 	/ast_syntaxe/sans_fonction/
 				/gestion_id/sans_fonction/
+				/tam/sans_fonction/
 
 -> break sans loop
 -> (pour cas d'erreur : BreakSansLoop)
 testLoop5.rat dans : /gestion_id/sans_fonction/
 
--> break id quand la loup a ete ferme (pour cas d'erreur : BreakSansLoop)
+-> break id quand la loop a ete ferme
+-> (pour cas d'erreur : BreakSansLoop)
 testLoop6.rat dans : /gestion_id/sans_fonction/
 
-A COMPLETER
+-> break id mais il n'existe pas de loop ayant cet id
+-> (pour cas d'erreur : LoopUndefined)
+testLoop7.rat dans : /gestion_id/sans_fonction/
 
+-> loop ayant le même nom qu'une variable
+testLoop8.rat dans : /ast_syntaxe/sans_fonction/
+			/gestion_id/sans_fonction/
+			/tam/sans_fonction/
+
+A COMPLETER (Faire cas d'erreurs pour continue ???)
 
 -----------------------------------------------------------------------
+
