@@ -21,7 +21,7 @@ let rec analyse_tds_affectable tds a modif =
     (match chercherGlobalement tds n with
       |None -> raise (IdentifiantNonDeclare n)
       |Some info_ast -> (match info_ast_to_info info_ast with
-                          |InfoConst _ -> if modif then raise NotModifiable
+                          |InfoConst _ -> if modif then raise (MauvaiseUtilisationIdentifiant n)
                                                             else AstTds.Ident info_ast
                           |InfoVar _ -> AstTds.Ident info_ast
                           |InfoFun _ -> raise (MauvaiseUtilisationIdentifiant n) 
@@ -67,7 +67,7 @@ let rec analyse_tds_expression tds e =
                               )
           )
   |AstSyntax.Affectable a ->
-    let na = analyse_tds_affectable tds a true in
+    let na = analyse_tds_affectable tds a false in
       AstTds.Affectable na
   |AstSyntax.Null -> AstTds.Null 
 
