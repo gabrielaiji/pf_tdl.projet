@@ -392,13 +392,15 @@ let%test_unit "testTernaire3" =
   with
   | TypeInattendu(Int,Bool) -> ()
 
-  let%test_unit "testTernaire4" = 
+let%test_unit "testTernaire4" = 
   try 
     let _ = compiler (pathFichiersRat^"testTernaire4.rat")
     in raise ErreurNonDetectee
   with
   | TypeInattendu(Int,Rat) -> ()
 
+let%test_unit "testPointeur1" = 
+  let _ = compiler (pathFichiersRat^"testPointeur1.rat") in ()
 
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
 open Unix

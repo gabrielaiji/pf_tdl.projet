@@ -120,7 +120,7 @@ let rec analyse_type_instruction i =
     let (na,t) = analyse_type_affectable a in
       let (ne,tPrime) = analyse_type_expression e in
         if est_compatible t tPrime then AstType.Affectation(na,ne)
-                                   else raise (TypeInattendu(t,tPrime))
+                                   else raise (TypeInattendu(tPrime,t))
   (* | AstTds.Affectation (info_ast,e) ->
     let (ne,t) = analyse_type_expression e in
       let nt = getType info_ast in 

@@ -9,11 +9,15 @@ let rec string_of_type t =
   | Pointeur t -> "Pointeur of "^(string_of_type t)
 
 
-let est_compatible t1 t2 =
+let rec est_compatible t1 t2 =
   match t1, t2 with
   | Bool, Bool -> true
-  | Int, Int -> true
-  | Rat, Rat -> true 
+  | Int, Int -> true 
+  | Rat, Rat -> true
+  | Pointeur _, Undefined -> true
+  | Undefined, Pointeur _ -> true
+  | Undefined, Undefined -> true
+  | Pointeur t1, Pointeur t2 -> est_compatible t1 t2
   | _ -> false 
 
 let%test _ = est_compatible Bool Bool
@@ -51,7 +55,7 @@ let getTaille t =
   | Int -> 1
   | Bool -> 1
   | Rat -> 2
-  | Undefined -> 0
+  | Undefined -> 1  (*TODO : verif à la passe tam*)
   | Pointeur _ -> 1
   
 let%test _ = getTaille Int = 1

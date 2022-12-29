@@ -83,6 +83,7 @@ A COMPLETER (Faire cas d'erreurs pour continue ???)
 -> programme utilisant les pointeurs
 testPointeur1.rat dans : /ast_syntaxe/sans_fonction/
 				/gestion_id/sans_fonction/
+				/type/sans_fonction/
 
 A COMPLETER
 
