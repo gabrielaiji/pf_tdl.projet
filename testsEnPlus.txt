@@ -84,6 +84,7 @@ A COMPLETER (Faire cas d'erreurs pour continue) ???
 testPointeur1.rat dans : /ast_syntaxe/sans_fonction/
 				/gestion_id/sans_fonction/
 				/type/sans_fonction/
+				/tam/sans_fonction/
 
 -> programmes vérifiant le bon placement en mémoire avec pointeurs
 -> (sans fonction)
@@ -100,7 +101,7 @@ test18.rat dans : /placement/avec_fonction/
 test19.rat dans : /placement/avec_fonction/
 A COMPLETER ???
 
-A COMPLETER
+A COMPLETER ???
 
 -----------------------------------------------------------------------
 
