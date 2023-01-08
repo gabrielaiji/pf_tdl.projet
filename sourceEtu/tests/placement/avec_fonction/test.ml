@@ -117,3 +117,23 @@ let%test "test12_f_i" =
   test (pathFichiersRat^"test12.rat")  "f" ("i",1)  (-1, "LB")
   
 
+let%test "test16_f_pa" = 
+  test (pathFichiersRat^"test16.rat")  "f" ("pa",1)  (-1, "LB")
+
+let%test "test17_f_pa" = 
+  test (pathFichiersRat^"test17.rat")  "f" ("pa",1)  (-1, "LB")
+
+let%test "test18_f_pa" = 
+  test (pathFichiersRat^"test18.rat")  "f" ("pa",1)  (-1, "LB")
+
+let%test "test19_f_b" = 
+  test (pathFichiersRat^"test19.rat")  "f" ("b",1)  (3, "LB")
+
+let%test "test19_f_pb" = 
+  test (pathFichiersRat^"test19.rat")  "f" ("pb",1)  (-3, "LB")
+
+let%test "test19_f_pr" = 
+  test (pathFichiersRat^"test19.rat")  "f" ("pr",1)  (-2, "LB")
+
+let%test "test19_f_pi" = 
+  test (pathFichiersRat^"test19.rat")  "f" ("pi",1)  (-1, "LB")

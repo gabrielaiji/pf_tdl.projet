@@ -76,7 +76,7 @@ testLoop8.rat dans : /ast_syntaxe/sans_fonction/
 			/gestion_id/sans_fonction/
 			/tam/sans_fonction/
 
-A COMPLETER (Faire cas d'erreurs pour continue ???)
+A COMPLETER (Faire cas d'erreurs pour continue) ???
 
 -----------------------------------------------------------------------
 
@@ -84,6 +84,21 @@ A COMPLETER (Faire cas d'erreurs pour continue ???)
 testPointeur1.rat dans : /ast_syntaxe/sans_fonction/
 				/gestion_id/sans_fonction/
 				/type/sans_fonction/
+
+-> programmes vérifiant le bon placement en mémoire avec pointeurs
+-> (sans fonction)
+test13.rat dans : /placement/sans_fonction/
+test14.rat dans : /placement/sans_fonction/
+test15.rat dans : /placement/sans_fonction/
+A COMPLETER (if else ET while) ???
+
+-> programmes vérifiant le bon placement en mémoire avec pointeurs
+-> (avec fonction)
+test16.rat dans : /placement/avec_fonction/
+test17.rat dans : /placement/avec_fonction/
+test18.rat dans : /placement/avec_fonction/
+test19.rat dans : /placement/avec_fonction/
+A COMPLETER ???
 
 A COMPLETER
 

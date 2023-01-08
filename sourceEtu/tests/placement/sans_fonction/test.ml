@@ -146,3 +146,43 @@ let%test "test7_y1" =
     
 let%test "test7_z1" = 
   test (pathFichiersRat^"test7.rat")  "main" ("z1",1)  (7, "SB")
+
+
+let%test "test13_px" = 
+  test (pathFichiersRat^"test13.rat")  "main" ("px",1)  (0, "SB")
+
+let%test "test14_px" = 
+  test (pathFichiersRat^"test14.rat")  "main" ("px",1)  (0, "SB")
+
+let%test "test14_ppx" = 
+  test (pathFichiersRat^"test14.rat")  "main" ("ppx",1)  (1, "SB")
+
+let%test "test14_x" = 
+  test (pathFichiersRat^"test14.rat")  "main" ("x",1)  (2, "SB")
+
+let%test "test15_px" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("px",1)  (0, "SB")
+
+let%test "test15_py" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("py",1)  (1, "SB")
+
+let%test "test15_pz" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("pz",1)  (2, "SB")
+
+let%test "test15_x" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("x",1)  (3, "SB")
+
+let%test "test15_y" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("y",1)  (4, "SB")
+
+let%test "test15_z" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("z",1)  (6, "SB")
+
+let%test "test15_x1" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("x1",1)  (7, "SB")
+
+let%test "test15_y1" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("y1",1)  (8, "SB")
+
+let%test "test15_z1" = 
+  test (pathFichiersRat^"test15.rat")  "main" ("z1",1)  (10, "SB")

@@ -1,0 +1,7 @@
+(int ∗) f ((int ∗) pa) {
+    return pa;
+}
+
+
+main {
+}

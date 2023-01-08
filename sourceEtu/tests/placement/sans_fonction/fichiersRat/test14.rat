@@ -1,0 +1,5 @@
+main {
+    int ∗ px = (new int);
+    int ∗ ∗ ppx = & px;
+    int x = 4;
+}

@@ -1,0 +1,7 @@
+(rat ∗) f ((rat ∗) pa) {
+    return pa;
+}
+
+
+main {
+}

@@ -1,0 +1,14 @@
+main {
+    bool ∗ px = (new bool);
+    rat ∗ py = (new rat);
+    int ∗ pz = (new int);
+    bool x = true;
+    rat y = [0/1];
+    int z = 0;
+    px = &x;
+    py = &y;
+    pz = &z;
+    bool x1 = (∗px);
+    rat y1 = (∗py);
+    int z1 = (∗pz);
+}

@@ -1,0 +1,9 @@
+bool f (bool∗ pb rat∗ pr int∗ pi) {
+    bool b = true;
+    pb = &b;
+    return (∗pb);
+}
+
+
+main {
+}
