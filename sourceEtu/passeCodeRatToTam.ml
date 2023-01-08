@@ -17,8 +17,12 @@ type t2 = string
 (* InternalError si erreur dans les passes précédentes *)
 let rec analyse_code_affectable a =
   match a with
-  |Ident info_ast -> "TODO"
-  |Deref a -> "TODO"
+  |Ident info_ast ->
+    (match info_ast_to_info info_ast with
+    | InfoVar(_,t,dep,reg) -> load (getTaille t) dep reg
+    | InfoConst(_,i) -> loadl_int i
+    | _ -> failwith "InternalError")
+  |Deref a -> analyse_code_affectable a
 
 (* analyse_code_expression : AstPlacement.expression -> string *)
 (* Paramètre : l'expression à analyser *)
@@ -76,9 +80,15 @@ let rec analyse_code_expression e =
               ^ (label els)
               ^ ne3
               ^ (label endif)
-    | New t -> "TODO"
-    | Adresse b -> "TODO"
-    | Affectable a -> "TODO"
+    | New _ -> (loadl_int 1) ^ (subr "MAlloc")
+    | Adresse info_ast ->
+      (match info_ast_to_info info_ast with
+      | InfoVar(_,_,dep,reg) -> loada dep reg
+      | _ -> failwith "InternalError")
+    | Affectable a -> (analyse_code_affectable a)
+                      ^ (match a with
+                         | Deref _ -> loadi 1
+                         | _ -> "")
     | Null -> "TODO"
 
 
@@ -94,7 +104,10 @@ let rec analyse_code_instruction i =
       push (getTaille t) ^ (analyse_code_expression e) ^ (store (getTaille t) d r)
     | _ -> failwith "InternalError")
   
-  | Affectation(a,e) -> "TODO"
+  | Affectation(a,e) ->
+    (analyse_code_expression e)
+    ^ (analyse_code_affectable a)
+    ^ storei 1
   (* | Affectation(info_ast,e) ->
     (match info_ast_to_info info_ast with
     | InfoVar(_,t,d,r) ->
