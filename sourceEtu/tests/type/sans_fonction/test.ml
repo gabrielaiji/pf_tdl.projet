@@ -402,6 +402,9 @@ let%test_unit "testTernaire4" =
 let%test_unit "testPointeur1" = 
   let _ = compiler (pathFichiersRat^"testPointeur1.rat") in ()
 
+let%test_unit "testElseOptionnel2" = 
+  let _ = compiler (pathFichiersRat^"testElseOptionnel2.rat") in ()
+
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
 open Unix
 open Filename
