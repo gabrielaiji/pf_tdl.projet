@@ -68,3 +68,7 @@ let%expect_test "factrec" =
 let%expect_test "testTernaire2" =
   runtam (pathFichiersRat^"testTernaire2.rat");
   [%expect{| true |}]
+
+let%expect_test "testAll" =
+  runtam (pathFichiersRat^"testAll.rat");
+  [%expect{| 01010101018880101010101 |}]

@@ -106,5 +106,8 @@ A COMPLETER ???
 -----------------------------------------------------------------------
 
 -> programme combinant les différentes constructions implémentées
-TODO
+testAll.rat dans : /ast_syntaxe/avec_fonction/
+			 /gestion_id/avec_fonction/
+			 /type/avec_fonction/
+			 /tam/avec_fonction/
 

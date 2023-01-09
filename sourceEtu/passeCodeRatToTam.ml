@@ -12,17 +12,20 @@ type t1 = Ast.AstPlacement.programme
 type t2 = string
 
 (* analyse_code_affectable : AstPlacement.affectable -> string *)
-(* Paramètre : l'affectable à analyser *)
+(* Paramètre a : l'affectable à analyser *)
+(* Paramètre modif : permet de savoir si accès en écriture à la valeur pointée par a *)
 (* Génère le code TAM (string) associé à l'affectable *)
 (* InternalError si erreur dans les passes précédentes *)
-let rec analyse_code_affectable a =
+let rec analyse_code_affectable a modif =
   match a with
   |Ident info_ast ->
     (match info_ast_to_info info_ast with
-    | InfoVar(_,t,dep,reg) -> load (getTaille t) dep reg
+    | InfoVar(_,t,dep,reg) -> if modif then store (getTaille t) dep reg
+                                       else load (getTaille t) dep reg
     | InfoConst(_,i) -> loadl_int i
     | _ -> failwith "InternalError")
-  |Deref a -> analyse_code_affectable a
+  |Deref a -> if modif then (analyse_code_affectable a false) ^ (storei 1)
+                       else (analyse_code_affectable a false) ^ (loadi 1)
 
 (* analyse_code_expression : AstPlacement.expression -> string *)
 (* Paramètre : l'expression à analyser *)
@@ -85,10 +88,7 @@ let rec analyse_code_expression e =
       (match info_ast_to_info info_ast with
       | InfoVar(_,_,dep,reg) -> loada dep reg
       | _ -> failwith "InternalError")
-    | Affectable a -> (analyse_code_affectable a)
-                      ^ (match a with
-                         | Deref _ -> loadi 1
-                         | _ -> "")
+    | Affectable a -> (analyse_code_affectable a false)
     | Null -> "TODO"
 
 
@@ -106,8 +106,7 @@ let rec analyse_code_instruction i =
   
   | Affectation(a,e) ->
     (analyse_code_expression e)
-    ^ (analyse_code_affectable a)
-    ^ storei 1
+    ^ (analyse_code_affectable a true)
   (* | Affectation(info_ast,e) ->
     (match info_ast_to_info info_ast with
     | InfoVar(_,t,d,r) ->

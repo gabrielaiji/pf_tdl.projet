@@ -69,9 +69,9 @@ let%expect_test "testdenom" =
   runtam (pathFichiersRat^"testdenom.rat");
   [%expect{| 7 |}]
 
-(* let%expect_test "testwhile1" =
+let%expect_test "testwhile1" =
   runtam (pathFichiersRat^"testwhile1.rat");
-  [%expect{| 19 |}] *)
+  [%expect{| 19 |}]
 
 let%expect_test "testif1" =
   runtam (pathFichiersRat^"testif1.rat");
@@ -81,33 +81,33 @@ let%expect_test "testif2" =
   runtam (pathFichiersRat^"testif2.rat");
   [%expect{| 21 |}]
 
-(* let%expect_test "factiter" =
+let%expect_test "factiter" =
   runtam (pathFichiersRat^"factiter.rat");
-  [%expect{| 120 |}] *)
+  [%expect{| 120 |}]
 
-(* let%expect_test "complique" =
+let%expect_test "complique" =
   runtam (pathFichiersRat^"complique.rat");
-  [%expect{| [9/4][27/14][27/16][3/2] |}] *)
+  [%expect{| [9/4][27/14][27/16][3/2] |}]
 
 let%expect_test "testTernaire1" =
   runtam (pathFichiersRat^"testTernaire1.rat");
   [%expect{| 2 |}]
 
-(* let%expect_test "testLoop1" =
+let%expect_test "testLoop1" =
   runtam (pathFichiersRat^"testLoop1.rat");
-  [%expect{| 1266645 |}] *)
+  [%expect{| 1266645 |}]
 
-(* let%expect_test "testLoop3" =
+let%expect_test "testLoop3" =
   runtam (pathFichiersRat^"testLoop3.rat");
-  [%expect{| 0123456789101112131415161718192021222301234567891011121314151617181920212223 |}] *)
+  [%expect{| 0123456789101112131415161718192021222301234567891011121314151617181920212223 |}]
 
-(* let%expect_test "testLoop4" =
+let%expect_test "testLoop4" =
   runtam (pathFichiersRat^"testLoop4.rat");
-  [%expect{| 012345678910 |}] *)
+  [%expect{| 012345678910 |}]
 
-(* let%expect_test "testLoop8" =
+let%expect_test "testLoop8" =
   runtam (pathFichiersRat^"testLoop8.rat");
-  [%expect{| 01234567891011121314151617181920212223 |}] *)
+  [%expect{| 01234567891011121314151617181920212223 |}]
 
 let%expect_test "testPointeur1" =
   runtam (pathFichiersRat^"testPointeur1.rat");
