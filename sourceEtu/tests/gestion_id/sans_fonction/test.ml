@@ -124,12 +124,6 @@ let%test_unit "testRecursiviteVariable" =
   with
   | IdentifiantNonDeclare("x") -> ()
 
-let%test_unit "testElseOptionnel1" = 
-  let _ = compiler (pathFichiersRat^"testElseOptionnel1.rat") in ()
-
-let%test_unit "testElseOptionnel2" = 
-  let _ = compiler (pathFichiersRat^"testElseOptionnel2.rat") in ()
-
 let%test_unit "testTernaire1" = 
   let _ = compiler (pathFichiersRat^"testTernaire1.rat") in ()
 

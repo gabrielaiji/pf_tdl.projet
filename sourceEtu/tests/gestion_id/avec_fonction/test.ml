@@ -189,12 +189,6 @@ let%test_unit "testRetourFonction"=
   with
   | RetourDansMain -> ()
 
-let%test_unit "testElseOptionnel3" = 
-  let _ = compiler (pathFichiersRat^"testElseOptionnel3.rat") in ()
-
-let%test_unit "testElseOptionnel4" = 
-  let _ = compiler (pathFichiersRat^"testElseOptionnel4.rat") in ()
-
 let%test_unit "testTernaire2" = 
   let _ = compiler (pathFichiersRat^"testTernaire2.rat") in ()
 

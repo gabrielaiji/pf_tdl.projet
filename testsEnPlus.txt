@@ -1,22 +1,17 @@
 -> if simple dans bloc principal
 testElseOptionnel1.rat dans : /ast_syntaxe/sans_fonction/
-					/gestion_id/sans_fonction/
 
 -> if simple dans boucle while
 -> (exemple du sujet)
 testElseOptionnel2.rat dans : /ast_syntaxe/sans_fonction/
-					/gestion_id/sans_fonction/
-					/type/sans_fonction/
 					/tam/sans_fonction/
 
 -> appel de fonction dans if simple
 testElseOptionnel3.rat dans : /ast_syntaxe/avec_fonction/
-					/gestion_id/avec_fonction/
 
 -> if simple dans fonction
 -> return dans if simple + return apres if
 testElseOptionnel4.rat dans : /ast_syntaxe/avec_fonction/
-					/gestion_id/avec_fonction/
 
 -----------------------------------------------------------------------
 
