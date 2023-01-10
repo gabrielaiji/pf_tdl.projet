@@ -77,19 +77,19 @@ let rec analyse_tds_expression tds e =
 
 (* estImbriquee : string -> ((string * int) list * (string * int) list) ref -> boolean *)
 (* Paramètre name : nom de la loop dont on veut savoir si on est imbriquée dedans *)
-(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Paramètre ref_tds_loop : ref de la pile des loops *)
 (* Retourne un boolean disant si à la ligne à laquelle on se trouve, on
    est imbriquée dans une loop de nom name *)
-let estImbriquee name ref_lstlst = let lst,_ = !ref_lstlst in
-  match List.assoc_opt name lst with
+let estImbriquee name ref_tds_loop = let lst_labels,_ = !ref_tds_loop in
+  match List.assoc_opt name lst_labels with
     |None -> false
     |Some _ -> true
 
 (* estVide : ((string * int) list * (string * int) list) ref -> boolean *)
-(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Paramètre ref_tds_loop : ref de la pile des loops *)
 (* Retourne un boolean disant si à la ligne à laquelle on se trouve, on
    est imbriquée dans au moins une loop*)
-let estVide ref_lstlst = let lst, _ = !ref_lstlst in lst = []
+let estVide ref_tds_loop = let lst, _ = !ref_tds_loop in lst = []
 
 (* update_assoc : 'a -> 'b -> ('a*'b) list -> ('a*'b) list *)
 (* Paramètre key : clé dont on veut changer la valeur associée *)
@@ -103,38 +103,38 @@ let rec update_assoc key value lst = match lst with
 
 (* ajouteLoop : string -> ((string * int) list * (string * int) list) ref -> string *)
 (* Paramètre name : nom de la loop qu'on veut ajouter *)
-(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Paramètre ref_tds_loop : ref de la pile des loops *)
 (* Retourne le label qu'on utilisera au niveau du code TAM de la nouvelle loop *)
-let ajouteLoop name ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
+let ajouteLoop name ref_tds_loop = let lst_labels, lst_numloop = !ref_tds_loop in
   match List.assoc_opt name lst_numloop with
-    |None -> ref_lstlst := ((name,1)::lst_loop), (name, 1)::lst_numloop;
+    |None -> ref_tds_loop := ((name,1)::lst_labels), (name, 1)::lst_numloop;
               name^"1"
-    |Some num -> ref_lstlst := ((name,num+1)::lst_loop), (update_assoc name (num+1) lst_numloop);
+    |Some num -> ref_tds_loop := ((name,num+1)::lst_labels), (update_assoc name (num+1) lst_numloop);
                 name^string_of_int(num+1)
 
 (* removeLastLoop : ((string * int) list * (string * int) list) ref -> unit() *)  
-(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Paramètre ref_tds_loop : ref de la pile des loops *)
 (* Enlève de la ref de la pile des loops, la dernière loop ajoutée *)
-let removeLastLoop ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
-  match lst_loop with
+let removeLastLoop ref_tds_loop = let lst_labels, lst_numloop = !ref_tds_loop in
+  match lst_labels with
     |[] -> failwith "Internal Error"
-    |_::tl -> ref_lstlst := tl, lst_numloop
+    |_::tl -> ref_tds_loop := tl, lst_numloop
 
 (* getUsedName : string -> ((string * int) list * (string * int) list) ref -> string *)
 (* Paramètre name : nom de la loop dont on veut récupérer le label TAM *)
-(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Paramètre ref_tds_loop : ref de la pile des loops *)
 (* Retourne le label qu'on utilisera au niveau du code TAM, associée à la loop 
     de nom name, et qui est la plus interne *)
-let getUsedName name ref_lstlst = let lst_loop, _ = !ref_lstlst in
-  match List.assoc_opt name lst_loop with
+let getUsedName name ref_tds_loop = let lst_labels, _ = !ref_tds_loop in
+  match List.assoc_opt name lst_labels with
     |None -> failwith "Internal Error"
     |Some num -> name^string_of_int(num)
 
 (* getLastUsedName : string -> ((string * int) list * (string * int) list) ref -> string *)
-(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Paramètre ref_tds_loop : ref de la pile des loops *)
 (* Retourne le label de la loop la plus interne *)
-let getLastUsedName ref_lstlst = let lst_loop, _ = !ref_lstlst in
-  match lst_loop with
+let getLastUsedName ref_tds_loop = let lst_labels, _ = !ref_tds_loop in
+  match lst_labels with
     |[] -> failwith "Internal Error"
     |(name, num)::_ -> name^string_of_int(num)
 
@@ -142,12 +142,12 @@ let getLastUsedName ref_lstlst = let lst_loop, _ = !ref_lstlst in
 (* Paramètre tds : la table des symboles courante *)
 (* Paramètre oia : None si l'instruction i est dans le bloc principal,
                    Some ia où ia est l'information associée à la fonction dans laquelle est l'instruction i sinon *)
-(* Paramètre refListeLoop : Référence de la liste des identifiants des loops dans laquelle l'instruction i est imbriquée *)
+(* Paramètre ref_tds_loop : Référence de la liste des identifiants des loops dans laquelle l'instruction i est imbriquée *)
 (* Paramètre i : l'instruction à analyser *)
 (* Vérifie la bonne utilisation des identifiants et tranforme l'instruction
 en une instruction de type AstTds.instruction *)
 (* Erreur si mauvaise utilisation des identifiants *)
-let rec analyse_tds_instruction tds oia refListeLoop i =
+let rec analyse_tds_instruction tds oia ref_tds_loop i =
   match i with
   | AstSyntax.Declaration (t, n, e) ->
       begin
@@ -224,16 +224,16 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
       (* Analyse de la condition *)
       let nc = analyse_tds_expression tds c in
       (* Analyse du bloc then *)
-      let tast = analyse_tds_bloc tds oia refListeLoop t in
+      let tast = analyse_tds_bloc tds oia ref_tds_loop t in
       (* Analyse du bloc else *)
-      let east = analyse_tds_bloc tds oia refListeLoop e in
+      let east = analyse_tds_bloc tds oia ref_tds_loop e in
       (* Renvoie la nouvelle structure de la conditionnelle *)
       AstTds.Conditionnelle (nc, tast, east)
   | AstSyntax.TantQue (c,b) ->
       (* Analyse de la condition *)
       let nc = analyse_tds_expression tds c in
       (* Analyse du bloc *)
-      let bast = analyse_tds_bloc tds oia refListeLoop b in
+      let bast = analyse_tds_bloc tds oia ref_tds_loop b in
       (* Renvoie la nouvelle structure de la boucle *)
       AstTds.TantQue (nc, bast)
   | AstSyntax.Retour (e) ->
@@ -252,29 +252,29 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
   |AstSyntax.Loop (n, li) ->
       let name = (if n = "" then "autocreated@" else n) in
         begin
-          let useableName = ajouteLoop name refListeLoop in
-            let nli = analyse_tds_bloc tds oia refListeLoop li in
-              removeLastLoop refListeLoop;
+          let useableName = ajouteLoop name ref_tds_loop in
+            let nli = analyse_tds_bloc tds oia ref_tds_loop li in
+              removeLastLoop ref_tds_loop;
               AstTds.Loop(useableName, nli)
         end
 
   |AstSyntax.Break n ->
-      if estVide refListeLoop then raise (LoopUndefined n)
+      if estVide ref_tds_loop then raise (LoopUndefined n)
         else
-          if estImbriquee n refListeLoop
-            then AstTds.Break (getUsedName n refListeLoop)
+          if estImbriquee n ref_tds_loop
+            then AstTds.Break (getUsedName n ref_tds_loop)
           else if n = ""
-              then AstTds.Break (getLastUsedName refListeLoop)
+              then AstTds.Break (getLastUsedName ref_tds_loop)
           else
             raise (LoopUndefined n)
     
   |AstSyntax.Continue n ->
-    if estVide refListeLoop then raise (LoopUndefined n)
+    if estVide ref_tds_loop then raise (LoopUndefined n)
         else
-          if estImbriquee n refListeLoop
-            then AstTds.Continue (getUsedName n refListeLoop)
+          if estImbriquee n ref_tds_loop
+            then AstTds.Continue (getUsedName n ref_tds_loop)
           else if n = ""
-              then AstTds.Continue (getLastUsedName refListeLoop)
+              then AstTds.Continue (getLastUsedName ref_tds_loop)
           else
             raise (LoopUndefined n)
 

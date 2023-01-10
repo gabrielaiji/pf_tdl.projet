@@ -402,6 +402,27 @@ let%test_unit "testTernaire4" =
 let%test_unit "testPointeur1" = 
   let _ = compiler (pathFichiersRat^"testPointeur1.rat") in ()
 
+let%test_unit "testPointeur2" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testPointeur2.rat")
+    in raise ErreurNonDetectee
+  with
+  | TypeInattendu(Bool,Int) -> ()
+
+let%test_unit "testPointeur3" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testPointeur3.rat")
+    in raise ErreurNonDetectee
+  with
+  | NotAPointeur -> ()
+
+let%test_unit "testPointeur4" = 
+  try 
+    let _ = compiler (pathFichiersRat^"testPointeur4.rat")
+    in raise ErreurNonDetectee
+  with
+  | CannotPrintPointeur -> ()
+
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
 open Unix
 open Filename

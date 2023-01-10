@@ -90,6 +90,18 @@ testPointeur1.rat dans : /ast_syntaxe/sans_fonction/
 				/type/sans_fonction/
 				/tam/sans_fonction/
 
+-> affectation d'une valeur de type inattendu à la valeur d'un pointeur
+-> (pour cas d'erreur : TypeInattendu)
+testPointeur2.rat dans : /type/sans_fonction/
+
+-> accès à la valeur pointée par une variable qui n'est pas un pointeur
+-> (pour cas d'erreur : NotAPointeur)
+testPointeur3.rat dans : /type/sans_fonction/
+
+-> affichage d'un pointeur
+-> (pour cas d'erreur : CannotPrintPointeur)
+-> testPointeur4.rat dans : /type/sans_fonction/
+
 -> programmes vérifiant le bon placement en mémoire avec pointeurs
 -> (sans fonction)
 test13.rat dans : /placement/sans_fonction/
