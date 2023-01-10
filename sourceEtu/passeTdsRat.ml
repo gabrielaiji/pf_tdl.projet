@@ -72,26 +72,39 @@ let rec analyse_tds_expression tds e =
   |AstSyntax.Null -> AstTds.Null 
 
 (* Ensemble de fonctions utiles pour traiter le cas des boucles "loop" à la Rust *)
-(*
-let createIdLoop = 
-  let num = ref 0 in
-  fun () ->
-    num := (!num)+1 ;
-    (string_of_int (!num))
-*)
+(* Explications dans le rapport du choix de la structure *)
 
+
+(* estImbriquee : string -> ((string * int) list * (string * int) list) ref -> boolean *)
+(* Paramètre name : nom de la loop dont on veut savoir si on est imbriquée dedans *)
+(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Retourne un boolean disant si à la ligne à laquelle on se trouve, on
+   est imbriquée dans une loop de nom name *)
 let estImbriquee name ref_lstlst = let lst,_ = !ref_lstlst in
   match List.assoc_opt name lst with
     |None -> false
     |Some _ -> true
 
+(* estVide : ((string * int) list * (string * int) list) ref -> boolean *)
+(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Retourne un boolean disant si à la ligne à laquelle on se trouve, on
+   est imbriquée dans au moins une loop*)
 let estVide ref_lstlst = let lst, _ = !ref_lstlst in lst = []
 
+(* update_assoc : 'a -> 'b -> ('a*'b) list -> ('a*'b) list *)
+(* Paramètre key : clé dont on veut changer la valeur associée *)
+(* Paramètre value : nouvelle valeur qu'on associe à la clé *)
+(* Paramètre lst : liste associative dont on veut changer une valeur *)
+(* Retourne la nouvelle liste associative, dont on a changé la valeur associé à la clé key *)
 let rec update_assoc key value lst = match lst with
   |[] -> failwith "Internal Error"
   |(k,v)::tl -> if key = k then (k, value)::tl
                           else (k, v)::(update_assoc key value tl)
 
+(* ajouteLoop : string -> ((string * int) list * (string * int) list) ref -> string *)
+(* Paramètre name : nom de la loop qu'on veut ajouter *)
+(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Retourne le label qu'on utilisera au niveau du code TAM *)
 let ajouteLoop name ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
   match List.assoc_opt name lst_numloop with
     |None -> ref_lstlst := ((name,1)::lst_loop), (name, 1)::lst_numloop;
@@ -99,16 +112,27 @@ let ajouteLoop name ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
     |Some num -> ref_lstlst := ((name,num+1)::lst_loop), (update_assoc name (num+1) lst_numloop);
                 name^string_of_int(num+1)
 
+(* removeLastLoop : ((string * int) list * (string * int) list) ref -> unit() *)  
+(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Enlève de la ref de la pile des loops, la dernière loop ajoutée *)
 let removeLastLoop ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
   match lst_loop with
     |[] -> failwith "Internal Error"
     |_::tl -> ref_lstlst := tl, lst_numloop
 
+(* getUsedName : string -> ((string * int) list * (string * int) list) ref -> string *)
+(* Paramètre name : nom de la loop dont on veut récupérer le label TAM *)
+(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Retourne le label qu'on utilisera au niveau du code TAM, associée à la loop 
+    de nom name, et qui est la plus proche *)
 let getUsedName name ref_lstlst = let lst_loop, _ = !ref_lstlst in
   match List.assoc_opt name lst_loop with
     |None -> failwith "Internal Error"
     |Some num -> name^string_of_int(num)
 
+(* getLastUsedName : string -> ((string * int) list * (string * int) list) ref -> string *)
+(* Paramètre ref_lstlst : ref de la pile des loops *)
+(* Retourne le label de la loop la plus proche *)
 let getLastUsedName ref_lstlst = let lst_loop, _ = !ref_lstlst in
   match lst_loop with
     |[] -> failwith "Internal Error"
@@ -226,7 +250,7 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
       end
       
   |AstSyntax.Loop (n, li) ->
-      let name = (if n = "" then "autocreated" else n) in
+      let name = (if n = "" then "autocreated@" else n) in
         begin
           let useableName = ajouteLoop name refListeLoop in
             let nli = analyse_tds_bloc tds oia refListeLoop li in
