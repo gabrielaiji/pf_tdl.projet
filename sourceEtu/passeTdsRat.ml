@@ -104,7 +104,7 @@ let rec update_assoc key value lst = match lst with
 (* ajouteLoop : string -> ((string * int) list * (string * int) list) ref -> string *)
 (* Paramètre name : nom de la loop qu'on veut ajouter *)
 (* Paramètre ref_lstlst : ref de la pile des loops *)
-(* Retourne le label qu'on utilisera au niveau du code TAM *)
+(* Retourne le label qu'on utilisera au niveau du code TAM de la nouvelle loop *)
 let ajouteLoop name ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
   match List.assoc_opt name lst_numloop with
     |None -> ref_lstlst := ((name,1)::lst_loop), (name, 1)::lst_numloop;
@@ -124,7 +124,7 @@ let removeLastLoop ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
 (* Paramètre name : nom de la loop dont on veut récupérer le label TAM *)
 (* Paramètre ref_lstlst : ref de la pile des loops *)
 (* Retourne le label qu'on utilisera au niveau du code TAM, associée à la loop 
-    de nom name, et qui est la plus proche *)
+    de nom name, et qui est la plus interne *)
 let getUsedName name ref_lstlst = let lst_loop, _ = !ref_lstlst in
   match List.assoc_opt name lst_loop with
     |None -> failwith "Internal Error"
@@ -132,7 +132,7 @@ let getUsedName name ref_lstlst = let lst_loop, _ = !ref_lstlst in
 
 (* getLastUsedName : string -> ((string * int) list * (string * int) list) ref -> string *)
 (* Paramètre ref_lstlst : ref de la pile des loops *)
-(* Retourne le label de la loop la plus proche *)
+(* Retourne le label de la loop la plus interne *)
 let getLastUsedName ref_lstlst = let lst_loop, _ = !ref_lstlst in
   match lst_loop with
     |[] -> failwith "Internal Error"

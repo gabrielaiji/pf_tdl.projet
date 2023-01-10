@@ -67,6 +67,7 @@ rule token = parse
 | ":"          { DP }
 | "∗"          { ASTX }
 | "&"          { ESPT }
+| "+="         { PLUSEQ }
 
 (* constantes entières *)
 | ("-")?['0'-'9']+ as i

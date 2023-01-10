@@ -39,6 +39,8 @@ let%test_unit "testLoop8" =
 let%test_unit "testPointeur1" = 
   let _ = compiler (pathFichiersRat^"testPointeur1.rat") in ()
 
+let%test_unit "testConstruBonus" = 
+  let _ = compiler (pathFichiersRat^"testConstruBonus.rat") in ()
 
 (* Fichiers de tests de la génération de code -> doivent passer la TDS *)
 

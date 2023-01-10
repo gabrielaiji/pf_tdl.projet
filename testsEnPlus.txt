@@ -120,3 +120,9 @@ testAll.rat dans : /ast_syntaxe/avec_fonction/
 			 /type/avec_fonction/
 			 /tam/avec_fonction/
 
+-----------------------------------------------------------------------
+
+-> construction bonus : opérateur += :
+testConstruBonus.rat dans : /ast_syntaxe/sans_fonction/
+				/tam/sans_fonction/
+

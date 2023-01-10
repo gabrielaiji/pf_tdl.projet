@@ -36,6 +36,7 @@ open Ast.AstSyntax
 %token MULT
 %token INF
 %token EOF
+%token PLUSEQ
 
 %token PI
 %token DP
@@ -93,6 +94,7 @@ i :
 | BREAK n=ID PV                     {Break (n)}
 | CONTINUE PV                       {Continue ("")}
 | CONTINUE n=ID PV                  {Continue (n)}
+| n=ID PLUSEQ exp=e PV              {Affectation (Ident n, Binaire (Plus, Affectable (Ident n), exp))}   (* construction bonus : opérateur += *)
 
 typ :
 | BOOL    {Bool}

@@ -124,3 +124,7 @@ let%expect_test "testPointeur1" =
 let%expect_test "testElseOptionnel2" =
   runtam (pathFichiersRat^"testElseOptionnel2.rat");
   [%expect{| 0246810 |}]
+
+let%expect_test "testConstruBonus" =
+  runtam (pathFichiersRat^"testConstruBonus.rat");
+  [%expect{| 11[22/15] |}]
