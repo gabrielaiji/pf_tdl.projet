@@ -9,7 +9,8 @@ test{
             print d; print u;
             u = (u+1);
         }
-        if (d = 2){break l;}
+        
         d=(d+1);
+        if (d = 2){break l;}
     }
 }

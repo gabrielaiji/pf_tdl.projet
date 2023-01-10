@@ -226,7 +226,7 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
       end
       
   |AstSyntax.Loop (n, li) ->
-      let name = (if n = "" then "autocreated@" else n) in
+      let name = (if n = "" then "autocreated" else n) in
         begin
           let useableName = ajouteLoop name refListeLoop in
             let nli = analyse_tds_bloc tds oia refListeLoop li in
@@ -245,7 +245,7 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
             raise (LoopUndefined n)
     
   |AstSyntax.Continue n ->
-    if estVide refListeLoop then raise (BreakSansLoop)
+    if estVide refListeLoop then raise (ContinueSansLoop)
         else
           if estImbriquee n refListeLoop
             then AstTds.Continue (getUsedName n refListeLoop)

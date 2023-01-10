@@ -7,6 +7,7 @@ exception IdentifiantNonDeclare of string
 exception MauvaiseUtilisationIdentifiant of string 
 
 exception BreakSansLoop
+exception ContinueSansLoop
 exception LoopUndefined of string
 
 (* Exceptions pour le typage *)
