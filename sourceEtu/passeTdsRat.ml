@@ -72,14 +72,18 @@ let rec analyse_tds_expression tds e =
   |AstSyntax.Null -> AstTds.Null 
 
 (* Ensemble de fonctions utiles pour traiter le cas des boucles "loop" à la Rust *)
+(*
 let createIdLoop = 
   let num = ref 0 in
   fun () ->
     num := (!num)+1 ;
     (string_of_int (!num))
+*)
 
 let estImbriquee name ref_lstlst = let lst,_ = !ref_lstlst in
-  List.mem name lst
+  match List.assoc_opt name lst with
+    |None -> false
+    |Some _ -> true
 
 let estVide ref_lstlst = let lst, _ = !ref_lstlst in lst = []
 
@@ -90,9 +94,9 @@ let rec update_assoc key value lst = match lst with
 
 let ajouteLoop name ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
   match List.assoc_opt name lst_numloop with
-    |None -> ref_lstlst := (name::lst_loop), (name, 1)::lst_numloop;
+    |None -> ref_lstlst := ((name,1)::lst_loop), (name, 1)::lst_numloop;
               name^"1"
-    |Some num -> ref_lstlst := (name::lst_loop), (update_assoc name (num+1) lst_numloop);
+    |Some num -> ref_lstlst := ((name,num+1)::lst_loop), (update_assoc name (num+1) lst_numloop);
                 name^string_of_int(num+1)
 
 let removeLastLoop ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
@@ -100,15 +104,15 @@ let removeLastLoop ref_lstlst = let lst_loop, lst_numloop = !ref_lstlst in
     |[] -> failwith "Internal Error"
     |_::tl -> ref_lstlst := tl, lst_numloop
 
-let getUsedName name ref_lstlst = let _, lst_numloop = !ref_lstlst in
-  match List.assoc_opt name lst_numloop with
+let getUsedName name ref_lstlst = let lst_loop, _ = !ref_lstlst in
+  match List.assoc_opt name lst_loop with
     |None -> failwith "Internal Error"
     |Some num -> name^string_of_int(num)
 
 let getLastUsedName ref_lstlst = let lst_loop, _ = !ref_lstlst in
   match lst_loop with
     |[] -> failwith "Internal Error"
-    |hd::_ -> getUsedName hd ref_lstlst
+    |(name, num)::_ -> name^string_of_int(num)
 
 (* analyse_tds_instruction : tds -> info_ast option -> AstSyntax.instruction -> AstTds.instruction *)
 (* Paramètre tds : la table des symboles courante *)
@@ -222,15 +226,13 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
       end
       
   |AstSyntax.Loop (n, li) ->
-      if estImbriquee n refListeLoop
-        then raise (DoubleDeclaration n)
-        else let name = (if n = "" then "autocreated"^createIdLoop() else n) in
-          begin
-            let useableName = ajouteLoop name refListeLoop in
-              let nli = analyse_tds_bloc tds oia refListeLoop li in
-                removeLastLoop refListeLoop;
-                AstTds.Loop(useableName, nli)
-          end
+      let name = (if n = "" then "autocreated@" else n) in
+        begin
+          let useableName = ajouteLoop name refListeLoop in
+            let nli = analyse_tds_bloc tds oia refListeLoop li in
+              removeLastLoop refListeLoop;
+              AstTds.Loop(useableName, nli)
+        end
 
   |AstSyntax.Break n ->
       if estVide refListeLoop then raise (BreakSansLoop)
