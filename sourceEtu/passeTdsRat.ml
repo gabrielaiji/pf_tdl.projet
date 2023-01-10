@@ -235,7 +235,7 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
         end
 
   |AstSyntax.Break n ->
-      if estVide refListeLoop then raise (BreakSansLoop)
+      if estVide refListeLoop then raise (LoopUndefined n)
         else
           if estImbriquee n refListeLoop
             then AstTds.Break (getUsedName n refListeLoop)
@@ -245,7 +245,7 @@ let rec analyse_tds_instruction tds oia refListeLoop i =
             raise (LoopUndefined n)
     
   |AstSyntax.Continue n ->
-    if estVide refListeLoop then raise (ContinueSansLoop)
+    if estVide refListeLoop then raise (LoopUndefined n)
         else
           if estImbriquee n refListeLoop
             then AstTds.Continue (getUsedName n refListeLoop)

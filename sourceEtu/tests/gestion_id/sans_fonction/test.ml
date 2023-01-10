@@ -150,14 +150,14 @@ let%test_unit "testLoop5" =
     let _ = compiler (pathFichiersRat^"testLoop5.rat")
     in raise ErreurNonDetectee
   with
-  | BreakSansLoop -> ()
+  | LoopUndefined("") -> ()
 
 let%test_unit "testLoop6" = 
   try 
     let _ = compiler (pathFichiersRat^"testLoop6.rat")
     in raise ErreurNonDetectee
   with
-  | BreakSansLoop -> ()
+  | LoopUndefined("heure") -> ()
 
 let%test_unit "testLoop7" = 
   try 
