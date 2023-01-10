@@ -49,8 +49,9 @@ testLoop1.rat dans : 	/ast_syntaxe/sans_fonction/
 				/tam/sans_fonction/
 
 -> 2 loops de meme id imbriques
--> (pour cas d'erreur : DoubleDeclaration("l") )
+-> (autorisé mais lève un warning comme en Rust)
 testLoop2.rat dans : /gestion_id/sans_fonction/
+			/tam/sans_fonction/
 
 -> 2 loops de meme id au meme niveau
 testLoop3.rat dans : 	/ast_syntaxe/sans_fonction/
@@ -63,11 +64,11 @@ testLoop4.rat dans : 	/ast_syntaxe/sans_fonction/
 				/tam/sans_fonction/
 
 -> break sans loop
--> (pour cas d'erreur : BreakSansLoop)
+-> (pour cas d'erreur : LoopUndefined)
 testLoop5.rat dans : /gestion_id/sans_fonction/
 
 -> break id quand la loop a ete ferme
--> (pour cas d'erreur : BreakSansLoop)
+-> (pour cas d'erreur : LoopUndefined)
 testLoop6.rat dans : /gestion_id/sans_fonction/
 
 -> break id mais il n'existe pas de loop ayant cet id
@@ -79,8 +80,10 @@ testLoop8.rat dans : /ast_syntaxe/sans_fonction/
 			/gestion_id/sans_fonction/
 			/tam/sans_fonction/
 
--> TODO
-testLoop9.rat dans : 
+-> 2 loops de meme id imbriques
+-> (autorisé mais lève un warning comme en Rust)
+testLoop9.rat dans : /gestion_id/sans_fonction/
+			/tam/sans_fonction/
 
 A COMPLETER (Faire cas d'erreurs pour continue) ???
 
