@@ -89,7 +89,7 @@ let rec analyse_code_expression e =
       | InfoVar(_,_,dep,reg) -> loada dep reg
       | _ -> failwith "InternalError")
     | Affectable a -> (analyse_code_affectable a false)
-    | Null -> "TODO"
+    | Null -> ""
 
 
 (* analyse_code_instruction : AstPlacement.instruction -> string *)
