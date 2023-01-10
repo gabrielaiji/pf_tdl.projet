@@ -14,9 +14,8 @@ let rec est_compatible t1 t2 =
   | Bool, Bool -> true
   | Int, Int -> true 
   | Rat, Rat -> true
-  | Pointeur _, Undefined -> true
-  | Undefined, Pointeur _ -> true
-  | Undefined, Undefined -> true
+  | Pointeur _, Pointeur Undefined -> true  (* car on considère que le type de "null" est Pointeur(Undefined) (cf. jugements de typages dans rapport) *)
+  | Pointeur Undefined, Pointeur _ -> true
   | Pointeur t1, Pointeur t2 -> est_compatible t1 t2
   | _ -> false 
 
@@ -36,6 +35,16 @@ let%test _ = not (est_compatible Bool Undefined)
 let%test _ = not (est_compatible Undefined Int)
 let%test _ = not (est_compatible Undefined Rat)
 let%test _ = not (est_compatible Undefined Bool)
+(* Tests ajoutés *)
+let%test _ = est_compatible (Pointeur Bool) (Pointeur Bool)
+let%test _ = est_compatible (Pointeur Int) (Pointeur Int)
+let%test _ = est_compatible (Pointeur Rat) (Pointeur Rat)
+let%test _ = est_compatible (Pointeur Int) (Pointeur Undefined)
+let%test _ = est_compatible (Pointeur Undefined) (Pointeur (Pointeur Int))
+let%test _ = not (est_compatible Int (Pointeur Int))
+let%test _ = not (est_compatible Undefined (Pointeur Int))
+let%test _ = not (est_compatible (Pointeur Int) (Pointeur Bool))
+let%test _ = not (est_compatible (Pointeur Int) (Pointeur (Pointeur Int)))
 
 let est_compatible_list lt1 lt2 =
   try
@@ -55,9 +64,15 @@ let getTaille t =
   | Int -> 1
   | Bool -> 1
   | Rat -> 2
-  | Undefined -> 1  (*TODO : verif à la passe tam*)
+  | Undefined -> 0
   | Pointeur _ -> 1
   
 let%test _ = getTaille Int = 1
 let%test _ = getTaille Bool = 1
 let%test _ = getTaille Rat = 2
+(* Tests ajoutés *)
+let%test _ = getTaille Undefined = 0
+let%test _ = getTaille (Pointeur Int) = 1
+let%test _ = getTaille (Pointeur Bool) = 1
+let%test _ = getTaille (Pointeur Rat) = 1
+let%test _ = getTaille (Pointeur (Pointeur Int)) = 1

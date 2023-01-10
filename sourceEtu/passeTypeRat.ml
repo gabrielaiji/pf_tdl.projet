@@ -98,7 +98,7 @@ let rec analyse_type_expression e =
     | AstTds.Affectable a ->
       let na,t = analyse_type_affectable a in
         (AstType.Affectable na,t)
-    | AstTds.Null -> AstType.Null,Undefined
+    | AstTds.Null -> AstType.Null, Pointeur Undefined
 
 
 (* analyse_type_instruction : AstTds.instruction -> AstType.instruction *)

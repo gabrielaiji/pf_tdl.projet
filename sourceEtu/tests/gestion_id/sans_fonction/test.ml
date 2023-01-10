@@ -137,11 +137,7 @@ let%test_unit "testLoop1" =
   let _ = compiler (pathFichiersRat^"testLoop1.rat") in ()
 
 let%test_unit "testLoop2" = 
-  try 
-    let _ = compiler (pathFichiersRat^"testLoop2.rat")
-    in raise ErreurNonDetectee
-  with
-  | DoubleDeclaration("l") -> ()
+let _ = compiler (pathFichiersRat^"testLoop2.rat") in ()
 
 let%test_unit "testLoop3" = 
   let _ = compiler (pathFichiersRat^"testLoop3.rat") in ()
@@ -172,6 +168,9 @@ let%test_unit "testLoop7" =
 
 let%test_unit "testLoop8" = 
   let _ = compiler (pathFichiersRat^"testLoop8.rat") in ()
+
+let%test_unit "testLoop9" = 
+  let _ = compiler (pathFichiersRat^"testLoop9.rat") in ()
 
 let%test_unit "testPointeur1" = 
   let _ = compiler (pathFichiersRat^"testPointeur1.rat") in ()
